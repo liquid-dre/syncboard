@@ -12,11 +12,12 @@ import {
 	UserButton,
 } from "@clerk/nextjs";
 import { shadesOfPurple } from "@clerk/themes";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
 const COMPANY_PRIMARY_COLOR = "#4ECDC4";
-const COMPANY_PRIMARY_COLOR_HOVER ="2081C3"
+const COMPANY_PRIMARY_COLOR_HOVER = "2081C3";
 
 const VIVID_DARK_BACKGROUND = "#18181B";
 const VIVID_CARD_BACKGROUND = "#202024";
@@ -69,6 +70,7 @@ export default function RootLayout({
 					>
 						<Navbar />
 						<main className="min-h-screen">{children}</main>
+						<Toaster richColors />
 						<footer className="bg-purple-900 py-12">
 							<div className="container mx-auto px-4 text-center text-gray-200">
 								<p>Made by AD</p>
