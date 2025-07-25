@@ -46,27 +46,27 @@ export async function getOrganization(slug: any) {
   return organization;
 }
 
-// export async function getProjects(orgId) {
-//   const { userId } = auth();
-//   if (!userId) {
-//     throw new Error("Unauthorized");
-//   }
+export async function getProjects(orgId: any) {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
 
-//   const user = await db.user.findUnique({
-//     where: { clerkUserId: userId },
-//   });
+  const user = await db.user.findUnique({
+    where: { clerkUserId: userId },
+  });
 
-//   if (!user) {
-//     throw new Error("User not found");
-//   }
+  if (!user) {
+    throw new Error("User not found");
+  }
 
-//   const projects = await db.project.findMany({
-//     where: { organizationId: orgId },
-//     orderBy: { createdAt: "desc" },
-//   });
+  const projects = await db.project.findMany({
+    where: { organizationId: orgId },
+    orderBy: { createdAt: "desc" },
+  });
 
-//   return projects;
-// }
+  return projects;
+}
 
 // export async function getUserIssues(userId) {
 //   const { orgId } = auth();

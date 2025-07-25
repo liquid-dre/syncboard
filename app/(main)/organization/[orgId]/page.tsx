@@ -2,6 +2,7 @@ import { getOrganization } from "@/actions/organizations";
 import OrgSwitcher from "@/components/org-switcher";
 import React from "react";
 import { notFound, redirect } from "next/navigation"; // Import for error handling
+import ProjectList from "./_components/project-list";
 
 // Define the shape of the 'params' prop
 // Typically, Next.js will infer this for page components,
@@ -49,8 +50,8 @@ const Organisation = async ({ params }: OrganisationProps) => {
 				</h2>
 				{/* Render your ProjectList component here */}
 				{/* <ProjectList orgId={organization.id} /> */}
-				<div className="bg-gray-100 p-6 rounded-lg shadow-md min-h-[200px] flex items-center justify-center text-gray-500">
-					<p>Project List will be displayed here.</p>
+				<div className="mb-4">
+					<ProjectList orgId={organization.id} />
 				</div>
 			</section>
 			<section className="mt-12">
