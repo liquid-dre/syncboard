@@ -59,7 +59,8 @@ export default function RootLayout({
 		>
 			<html lang="en" suppressHydrationWarning>
 				<head />
-				<body className={`${inter.className}`}>
+				{/* Applies Dotteb background throughtout the whole site */}
+				<body className={`${inter.className} dotted-background`}>
 					<ThemeProvider
 						attribute="class"
 						defaultTheme="system"
