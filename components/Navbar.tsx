@@ -5,10 +5,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { PenBox } from "lucide-react";
 import UserMenu from "./user-menu";
+import { checkUser } from "@/lib/checkUser";
 
 const COMPANY_PRIMARY_COLOR = "#4ECDC4";
 
-const Navbar = () => {
+const Navbar = async () => {
+	await checkUser();
+
 	return (
 		<header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40">
 			<div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -29,7 +32,7 @@ const Navbar = () => {
 					<div className="flex items-center gap-4">
 						<Link href="/project/create" passHref>
 							<Button
-								className={` border bg-background shadow-xs flex items-center gap-2 border-primary text-primary hover:bg-[#4ECDC4] hover:text-black hover:border-black`} 
+								className={` border bg-background shadow-xs flex items-center gap-2 border-primary text-primary hover:bg-[#4ECDC4] hover:text-black hover:border-black`}
 							>
 								<PenBox size={16} />
 								<span className="hidden md:inline">Create Project</span>
@@ -43,9 +46,8 @@ const Navbar = () => {
 						</SignedOut>
 
 						<SignedIn>
-							<UserMenu/>
+							<UserMenu />
 						</SignedIn>
-
 					</div>
 				</nav>
 			</div>
