@@ -6,6 +6,7 @@ import Image from "next/image";
 import { PenBox } from "lucide-react";
 import UserMenu from "./user-menu";
 import { checkUser } from "@/lib/checkUser";
+import UserLoading from "./user-loading";
 
 const COMPANY_PRIMARY_COLOR = "#4ECDC4";
 
@@ -50,6 +51,8 @@ const Navbar = async () => {
 						</SignedIn>
 					</div>
 				</nav>
+
+				<UserLoading />
 			</div>
 		</header>
 	);

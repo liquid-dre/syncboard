@@ -1,9 +1,25 @@
-import React from 'react'
+import React from "react";
 
-const Organisation = () => {
-  return (
-    <div>Organisation</div>
-  )
+// Define the shape of the 'params' prop
+interface OrganisationPageParams {
+  orgId: string;
 }
 
-export default Organisation
+// Define the shape of the component's props, including 'params'
+interface OrganisationProps {
+  params: OrganisationPageParams;
+}
+
+const Organisation = async ({ params }: OrganisationProps) => {
+  // Explicitly await params before destructuring
+  const resolvedParams = await params; // This is the key change
+  const { orgId } = resolvedParams;
+
+  return (
+    <div>
+      <h1>Organization ID: {orgId}</h1>
+    </div>
+  );
+};
+
+export default Organisation;
