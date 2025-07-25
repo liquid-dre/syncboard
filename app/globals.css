@@ -128,6 +128,16 @@
 	}
 }
 
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.floating-text {
+  animation: float 3s ease-in-out infinite;
+}
+
 @layer utilities {
 	.gradient-title {
 		@apply font-extrabold bg-gradient-to-br from-blue-600 via-blue-400 to-blue-900 bg-clip-text tracking-tighter text-transparent;
