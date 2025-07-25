@@ -1,9 +1,10 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import React from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import { PenBox } from "lucide-react";
+import UserMenu from "./user-menu";
 
 const COMPANY_PRIMARY_COLOR = "#4ECDC4";
 
@@ -42,7 +43,7 @@ const Navbar = () => {
 						</SignedOut>
 
 						<SignedIn>
-							<UserButton afterSignOutUrl="/" />
+							<UserMenu/>
 						</SignedIn>
 
 					</div>
