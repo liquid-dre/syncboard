@@ -129,13 +129,27 @@
 }
 
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+	0% {
+		transform: translateY(0px);
+	}
+	50% {
+		transform: translateY(-10px);
+	}
+	100% {
+		transform: translateY(0px);
+	}
 }
 
 .floating-text {
-  animation: float 3s ease-in-out infinite;
+	animation: float 3s ease-in-out infinite;
+}
+
+/* outline only for today’s date */
+.day-picker .rdp-day_today {
+	outline: 2px solid hsl(var(--primary));
+	outline-offset: 2px;
+	background-color: transparent !important;
+	color: inherit;
 }
 
 @layer utilities {
