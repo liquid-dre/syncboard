@@ -66,7 +66,7 @@ const CreateSprint = ({
 
 	return (
 		<>
-			<div>
+			<div className="flex justify-between pb-4">
 				<h1>{projectTitle}</h1>
 				<Button
 					className={`mt-2 px-4 py-2 rounded-md font-semibold text-white ${
