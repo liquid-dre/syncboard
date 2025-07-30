@@ -66,33 +66,58 @@ export default function SprintManager({
 		return null;
 	};
 
+	// useEffect(() => {
+	// 	const sprintId = searchParams.get("sprint");
+	// 	if (sprintId && sprintId !== sprint.id) {
+	// 		const selectedSprint = sprints.find((s: any) => s.id === sprintId);
+	// 		if (selectedSprint) {
+	// 			setSprint(selectedSprint);
+	// 			setStatus(selectedSprint.status);
+	// 		}
+	// 	}
+	// }, [searchParams, sprints]);
 	useEffect(() => {
 		const sprintId = searchParams.get("sprint");
-		if (sprintId && sprintId !== sprint.id) {
-			const selectedSprint = sprints.find((s: any) => s.id === sprintId);
+		if (sprintId && String(sprint.id) !== sprintId) {
+			const selectedSprint = sprints.find(
+				(s: any) => String(s.id) === sprintId
+			);
 			if (selectedSprint) {
 				setSprint(selectedSprint);
 				setStatus(selectedSprint.status);
 			}
 		}
-	}, [searchParams, sprints]);
+	}, [searchParams, sprints, sprint.id]);
 
-	const handleSprintChange = (value: any) => {
-		const selectedSprint = sprints.find((s: { id: any }) => s.id === value);
-		setSprint(selectedSprint);
-		setStatus(selectedSprint.status);
+	// const handleSprintChange = (value: any) => {
+	// 	const selectedSprint = sprints.find((s: { id: any }) => s.id === value);
+	// 	setSprint(selectedSprint);
+	// 	setStatus(selectedSprint.status);
+	// };
+
+	const handleSprintChange = (value: string) => {
+		if (String(sprint.id) === value) return; // Prevent unnecessary updates
+
+		const selectedSprint = sprints.find((s: any) => String(s.id) === value);
+		if (selectedSprint) {
+			setSprint(selectedSprint);
+			setStatus(selectedSprint.status);
+		}
 	};
 
 	return (
 		<div className="flex flex-col gap-4 p-4 border rounded-xl bg-muted/50 shadow-sm">
 			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-				<Select value={sprint.id} onValueChange={handleSprintChange}>
+				<Select
+					value={String(sprint.id ?? "")}
+					onValueChange={handleSprintChange}
+				>
 					<SelectTrigger className="bg-background border border-border hover:border-primary focus:ring-2 focus:ring-primary transition text-sm min-w-[250px]">
 						<SelectValue placeholder="Select Sprint" />
 					</SelectTrigger>
 					<SelectContent>
 						{sprints.map((sprint: any) => (
-							<SelectItem key={sprint.id} value={sprint.id}>
+							<SelectItem key={sprint.id} value={String(sprint.id)}>
 								{sprint.name} ({format(sprint.startDate, "MMM d, yyyy")} -{" "}
 								{format(sprint.endDate, "MMM d, yyyy")})
 							</SelectItem>

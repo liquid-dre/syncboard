@@ -152,6 +152,12 @@
 	color: inherit;
 }
 
+.wmde-markdown ul {
+	list-style-type: disc;
+	padding-left: 15px !important;
+	color: white;
+}
+
 @layer utilities {
 	.gradient-title {
 		@apply font-extrabold bg-gradient-to-br from-blue-600 via-blue-400 to-blue-900 bg-clip-text tracking-tighter text-transparent;
