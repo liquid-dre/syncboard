@@ -6,65 +6,23 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { PenBox } from "lucide-react";
 import UserMenu from "./user-menu";
-import { checkUser } from "@/lib/checkUser";
 import UserLoading from "./user-loading";
 import gsap from "gsap";
 
-const Navbar = async () => {
-	await checkUser();
-
+const Navbar = () => {
 	useEffect(() => {
-		// Animate title on hover
-		const title = document.getElementById("syncboard-title");
-		if (title) {
-			title.addEventListener("mouseenter", () => {
-				gsap.to(title, {
-					scale: 1.08,
-					rotate: 2,
-					duration: 0.3,
-					ease: "power2.out",
-				});
+		// GSAP floating bubble animation
+		const bubbles = document.querySelectorAll(".bubble");
+		bubbles.forEach((bubble) => {
+			gsap.to(bubble, {
+				y: -20,
+				repeat: -1,
+				yoyo: true,
+				duration: 2 + Math.random() * 20,
+				ease: "sine.inOut",
+				delay: Math.random(),
 			});
-			title.addEventListener("mouseleave", () => {
-				gsap.to(title, {
-					scale: 1,
-					rotate: 0,
-					duration: 0.3,
-					ease: "power2.out",
-				});
-			});
-		}
-
-		// Create Project button sparkle effect
-		const btn = document.getElementById("create-project-btn");
-		if (!btn) return;
-
-		const handleEnter = () => {
-			for (let i = 0; i < 5; i++) {
-				const sparkle = document.createElement("div");
-				sparkle.className =
-					"absolute w-1.5 h-1.5 rounded-full bg-white opacity-80 pointer-events-none";
-				sparkle.style.left = `${Math.random() * 100}%`;
-				sparkle.style.top = `${Math.random() * 100}%`;
-				btn.appendChild(sparkle);
-
-				gsap.fromTo(
-					sparkle,
-					{ scale: 0, y: 0, opacity: 0.8 },
-					{
-						scale: 1.5,
-						y: -10,
-						opacity: 0,
-						duration: 0.8 + Math.random() * 0.5,
-						ease: "power1.out",
-						onComplete: () => sparkle.remove(),
-					}
-				);
-			}
-		};
-
-		btn.addEventListener("mouseenter", handleEnter);
-		return () => btn.removeEventListener("mouseenter", handleEnter);
+		});
 	}, []);
 
 	return (
@@ -77,34 +35,39 @@ const Navbar = async () => {
 						id="syncboard-title"
 						className="text-2xl md:text-3xl font-extrabold tracking-wide 
                text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-pink-500 to-red-500 
-               cursor-pointer transition-transform duration-300"
+               cursor-pointer transition-transform duration-300 hover:scale-105 hover:rotate-1"
 					>
 						Syncboard
 					</Link>
 
-					{/* Right-hand side actions */}
 					<div className="flex items-center gap-4 relative">
-						{/* Create Project Button with GSAP sparkle effect */}
+						{/* Create Project Button with multiple bubbles */}
 						<Link href="/project/create" passHref>
 							<Button
 								id="create-project-btn"
 								className="relative overflow-hidden flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold
                            bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 text-white 
                            shadow-lg hover:shadow-[0_0_25px_rgba(255,180,50,0.7)]
-                           hover:scale-105 transition-all duration-300"
+                           hover:scale-115 transition-all duration-900 group"
 							>
 								<PenBox size={16} />
 								<span className="hidden md:inline">Create Project</span>
 
-								{/* Glow layer */}
-								<span
-									className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-pink-400 to-red-500 
-                                 opacity-20 blur-xl transition-all duration-300 group-hover:opacity-40"
-								/>
+								{/* Floating bubbles */}
+								{Array.from({ length: 6 }).map((_, i) => (
+									<span
+										key={i}
+										className={`bubble absolute w-2 h-2 rounded-full bg-white opacity-30 blur-sm 
+                                group-hover:opacity-70 transition-opacity duration-300`}
+										style={{
+											top: `${Math.random() * 100}%`,
+											left: `${Math.random() * 100}%`,
+										}}
+									/>
+								))}
 							</Button>
 						</Link>
 
-						{/* Auth Buttons */}
 						<SignedOut>
 							<SignInButton forceRedirectUrl="/onboarding">
 								<Button variant="default">Login</Button>
