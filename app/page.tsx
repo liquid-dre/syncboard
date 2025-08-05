@@ -7,22 +7,13 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-	ArrowRight,
-	BarChart,
-	Calendar,
-	ChevronRight,
-	Layout,
-} from "lucide-react";
-import Image from "next/image";
+import { ArrowRight, BarChart, Calendar, Layout } from "lucide-react";
 import Link from "next/link";
 import faqs from "@/data/faqs.json";
 
 const COMPANY_PRIMARY_COLOR = "#4ECDC4";
 
 export default function Home() {
-	
-
 	const features = [
 		{
 			title: "Intuitive Kanban Boards",
@@ -47,45 +38,54 @@ export default function Home() {
 	return (
 		<div className="min-h-screen">
 			{/* Hero Section */}
-			<section className="container mx-auto py-20 text-center">
-				<h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold gradient-title pb-6 flex flex-col items-center text-center">
-					Streamline Your Workflow <br />
-					<span className="flex gap-3 sm:gap-4 items-center">
+			<section className="container mx-auto py-24 text-center">
+				<h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold gradient-title pb-6">
+					Streamline Your Workflow
+					<br />
+					<span className="bg-gradient-to-r from-pink-500 via-orange-400 to-yellow-300 text-transparent bg-clip-text">
 						with SyncBoard
 					</span>
 				</h1>
-				<p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto">
+				<p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
 					Empower your team with our intuitive project management solution.
 				</p>
-				<p className="text-xl mb-12 max-w-2xl mx-auto"></p>
-				<Link href="/onboarding">
-					<Button
-						size="lg"
-						className={`mr-4 hover:bg-[${COMPANY_PRIMARY_COLOR}]`}
-					>
-						Get Started <ChevronRight size={18} className="ml-1" />
-					</Button>
-				</Link>
-				<Link href="#features">
-					<Button size="lg" variant="outline">
-						Learn More
-					</Button>
-				</Link>
+				<div className="flex justify-center gap-4">
+					<Link href="/onboarding">
+						<Button
+							size="lg"
+							className="relative px-8 py-4 text-lg font-semibold rounded-xl bg-gradient-to-r from-pink-500 via-orange-400 to-yellow-300 text-white shadow-lg hover:shadow-[0_0_30px_rgba(255,115,179,0.8)] hover:scale-115 transition-all"
+						>
+							Get Started <ArrowRight size={18} className="ml-2" />
+						</Button>
+					</Link>
+					<Link href="#features">
+						<Button
+							size="lg"
+							variant="outline"
+							className="text-white border-white hover:bg-white hover:text-white hover:scale-115"
+						>
+							Learn More
+						</Button>
+					</Link>
+				</div>
 			</section>
 
 			{/* Features Section */}
-			<section id="features" className="bg-gray-900 py-20 px-5">
+			<section id="features" className="bg-gray-950 py-24 px-5">
 				<div className="container mx-auto">
-					<h3 className="text-3xl font-bold mb-12 text-center">Key Features</h3>
-					<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+					<h3 className="text-4xl font-bold mb-16 text-center text-white">
+						Key Features
+					</h3>
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
 						{features.map((feature, index) => (
-							<Card key={index} className="bg-gray-800">
-								<CardContent className="pt-6">
-									<feature.icon className="h-12 w-12 mb-4 text-blue-300" />
-									<h4 className="text-xl font-semibold mb-2">
-										{feature.title}
-									</h4>
-									<p className="text-gray-300">{feature.description}</p>
+							<Card
+								key={index}
+								className="bg-gradient-to-br from-gray-800 via-gray-900 to-black text-white p-6 border border-white/10 hover:border-white/20 transition-all rounded-xl shadow-md hover:shadow-lg"
+							>
+								<CardContent className="flex flex-col items-start gap-4">
+									<feature.icon className="h-12 w-12 text-pink-400" />
+									<h4 className="text-2xl font-semibold">{feature.title}</h4>
+									<p className="text-sm text-gray-300">{feature.description}</p>
 								</CardContent>
 							</Card>
 						))}
@@ -94,9 +94,9 @@ export default function Home() {
 			</section>
 
 			{/* Companies Carousel */}
-			<section className="py-20">
+			<section className="py-24 bg-black text-white">
 				<div className="container mx-auto">
-					<h3 className="text-3xl font-bold mb-12 text-center">
+					<h3 className="text-4xl font-bold mb-16 text-center">
 						Trusted by Industry Leaders
 					</h3>
 					<CompanyCarousel />
@@ -104,12 +104,16 @@ export default function Home() {
 			</section>
 
 			{/* FAQ Section */}
-			<section className="bg-gray-900 py-20 px-5">
+			<section className="bg-gray-950 py-24 px-5 text-white">
 				<div className="container mx-auto">
-					<h3 className="text-3xl font-bold mb-12 text-center">
+					<h3 className="text-4xl font-bold mb-16 text-center">
 						Frequently Asked Questions
 					</h3>
-					<Accordion type="single" collapsible className="w-full">
+					<Accordion
+						type="single"
+						collapsible
+						className="w-full max-w-3xl mx-auto"
+					>
 						{faqs.map((faq, index) => (
 							<AccordionItem key={index} value={`item-${index}`}>
 								<AccordionTrigger>{faq.question}</AccordionTrigger>
@@ -121,9 +125,9 @@ export default function Home() {
 			</section>
 
 			{/* CTA Section */}
-			<section className="py-20 text-center px-5">
+			<section className="py-24 text-center bg-gradient-to-br from-black via-gray-950 to-black text-white px-5">
 				<div className="container mx-auto">
-					<h3 className="text-3xl font-bold mb-6">
+					<h3 className="text-4xl font-bold mb-6">
 						Ready to Transform Your Workflow?
 					</h3>
 					<p className="text-xl mb-12">
@@ -133,7 +137,7 @@ export default function Home() {
 					<Link href="/onboarding">
 						<Button
 							size="lg"
-							className={`animate-bounce hover:bg-[${COMPANY_PRIMARY_COLOR}]`}
+							className="px-8 py-4 text-lg font-bold rounded-xl bg-gradient-to-r from-[#b81365] via-[#f55536] to-orange-400 text-white shadow-lg hover:shadow-[0_0_30px_rgba(248,85,113,0.8)] animate-pulse hover:animate-none transition-all"
 						>
 							Start For Free <ArrowRight className="ml-2 h-5 w-5" />
 						</Button>

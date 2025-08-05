@@ -13,6 +13,7 @@ import {
 } from "@clerk/nextjs";
 import { shadesOfPurple } from "@clerk/themes";
 import { Toaster } from "sonner";
+import Footer from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -71,11 +72,12 @@ export default function RootLayout({
 						<Navbar />
 						<main className="min-h-screen">{children}</main>
 						<Toaster richColors />
-						<footer className="bg-purple-900 py-12">
+						{/* <footer className="bg-purple-900 py-12">
 							<div className="container mx-auto px-4 text-center text-gray-200">
 								<p>Made by AD</p>
 							</div>
-						</footer>
+						</footer> */}
+						<Footer />
 					</ThemeProvider>
 				</body>
 			</html>

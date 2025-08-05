@@ -28,12 +28,12 @@ export default async function OrganizationPage({ params }:any) {
 
 				<OrgSwitcher />
 			</div>
-			{/* <div className="mb-4">
+			<div className="mb-4">
 				<ProjectList orgId={organization.id} />
-			</div> */}
-			{/* <div className="mt-8">
+			</div>
+			<div className="mt-8">
 				<UserIssues userId={userId} />
-			</div> */}
+			</div>
 		</div>
 	);
 }

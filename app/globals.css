@@ -160,7 +160,7 @@
 
 @layer utilities {
 	.gradient-title {
-		@apply font-extrabold bg-gradient-to-br from-blue-600 via-blue-400 to-blue-900 bg-clip-text tracking-tighter text-transparent;
+		@apply font-extrabold  bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 bg-clip-text tracking-tighter text-transparent;
 	}
 }
 
