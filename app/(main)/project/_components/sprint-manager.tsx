@@ -10,20 +10,13 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { BarLoader } from "react-spinners";
-
 import { isAfter, isBefore, format, formatDistanceToNow } from "date-fns";
 
 import useFetch from "@/hooks/use-fetch";
 import { useRouter, useSearchParams } from "next/navigation";
 import { updateSprintStatus } from "@/actions/sprints";
 
-export default function SprintManager({
-	sprint,
-	setSprint,
-	sprints,
-	projectId,
-}: any) {
+export default function SprintManager({ sprint, setSprint, sprints }: any) {
 	const [status, setStatus] = useState(sprint.status);
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -31,7 +24,6 @@ export default function SprintManager({
 	const {
 		fn: updateStatus,
 		loading,
-		error,
 		data: updatedStatus,
 	} = useFetch(updateSprintStatus);
 
@@ -43,19 +35,16 @@ export default function SprintManager({
 		isBefore(now, endDate) && isAfter(now, startDate) && status === "PLANNED";
 	const canEnd = status === "ACTIVE";
 
-	const handleStatusChange = async (newStatus: string) => {
+	const handleStatusChange = (newStatus: string) => {
 		updateStatus(sprint.id, newStatus);
 	};
 
 	useEffect(() => {
-		if (updatedStatus && updatedStatus.success) {
+		if (updatedStatus?.success) {
 			setStatus(updatedStatus.sprint.status);
-			setSprint({
-				...sprint,
-				status: updatedStatus.sprint.status,
-			});
+			setSprint({ ...sprint, status: updatedStatus.sprint.status });
 		}
-	}, [updatedStatus, loading]);
+	}, [updatedStatus]);
 
 	const getStatusText = () => {
 		if (status === "COMPLETED") return `Sprint Ended`;
@@ -66,38 +55,19 @@ export default function SprintManager({
 		return null;
 	};
 
-	// useEffect(() => {
-	// 	const sprintId = searchParams.get("sprint");
-	// 	if (sprintId && sprintId !== sprint.id) {
-	// 		const selectedSprint = sprints.find((s: any) => s.id === sprintId);
-	// 		if (selectedSprint) {
-	// 			setSprint(selectedSprint);
-	// 			setStatus(selectedSprint.status);
-	// 		}
-	// 	}
-	// }, [searchParams, sprints]);
 	useEffect(() => {
 		const sprintId = searchParams.get("sprint");
-		if (sprintId && String(sprint.id) !== sprintId) {
-			const selectedSprint = sprints.find(
-				(s: any) => String(s.id) === sprintId
-			);
-			if (selectedSprint) {
-				setSprint(selectedSprint);
-				setStatus(selectedSprint.status);
-			}
-		}
-	}, [searchParams, sprints, sprint.id]);
+		if (!sprintId || String(sprint.id) === sprintId) return;
 
-	// const handleSprintChange = (value: any) => {
-	// 	const selectedSprint = sprints.find((s: { id: any }) => s.id === value);
-	// 	setSprint(selectedSprint);
-	// 	setStatus(selectedSprint.status);
-	// };
+		const selectedSprint = sprints.find((s: any) => String(s.id) === sprintId);
+		if (selectedSprint) {
+			setSprint(selectedSprint);
+			setStatus(selectedSprint.status);
+		}
+	}, [searchParams, sprints, sprint.id, setSprint]);
 
 	const handleSprintChange = (value: string) => {
-		if (String(sprint.id) === value) return; // Prevent unnecessary updates
-
+		if (String(sprint.id) === value) return;
 		const selectedSprint = sprints.find((s: any) => String(s.id) === value);
 		if (selectedSprint) {
 			setSprint(selectedSprint);
@@ -105,32 +75,37 @@ export default function SprintManager({
 		}
 	};
 
+	const statusText = getStatusText();
+
 	return (
-		<div className="flex flex-col gap-4 p-4 border rounded-xl bg-muted/50 shadow-sm">
+		<div className="flex flex-col gap-4 p-5 border rounded-xl bg-card shadow-md hover:shadow-lg transition-shadow">
+			{/* Header Row */}
 			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+				{/* Sprint Selector */}
 				<Select
 					value={String(sprint.id ?? "")}
 					onValueChange={handleSprintChange}
 				>
-					<SelectTrigger className="bg-background border border-border hover:border-primary focus:ring-2 focus:ring-primary transition text-sm min-w-[250px]">
+					<SelectTrigger className="bg-background border border-border hover:border-primary focus:ring-2 focus:ring-primary transition text-sm min-w-[260px] rounded-lg shadow-sm">
 						<SelectValue placeholder="Select Sprint" />
 					</SelectTrigger>
 					<SelectContent>
-						{sprints.map((sprint: any) => (
-							<SelectItem key={sprint.id} value={String(sprint.id)}>
-								{sprint.name} ({format(sprint.startDate, "MMM d, yyyy")} -{" "}
-								{format(sprint.endDate, "MMM d, yyyy")})
+						{sprints.map((s: any) => (
+							<SelectItem key={s.id} value={String(s.id)}>
+								{s.name} ({format(s.startDate, "MMM d, yyyy")} –{" "}
+								{format(s.endDate, "MMM d, yyyy")})
 							</SelectItem>
 						))}
 					</SelectContent>
 				</Select>
 
+				{/* Action Buttons */}
 				<div className="flex gap-2">
 					{canStart && (
 						<Button
 							onClick={() => handleStatusChange("ACTIVE")}
 							disabled={loading}
-							className="bg-green-600 hover:bg-green-700 text-white"
+							className="bg-green-600 hover:bg-green-700 text-white transition-all shadow-sm"
 						>
 							Start Sprint
 						</Button>
@@ -139,7 +114,7 @@ export default function SprintManager({
 						<Button
 							onClick={() => handleStatusChange("COMPLETED")}
 							disabled={loading}
-							variant="destructive"
+							className="bg-red-600 hover:bg-red-700 text-white transition-all shadow-sm"
 						>
 							End Sprint
 						</Button>
@@ -147,17 +122,29 @@ export default function SprintManager({
 				</div>
 			</div>
 
+			{/* Loading Skeleton */}
 			{loading && (
-				<div className="mt-3 w-full animate-pulse space-y-2">
-					<div className="h-4 bg-muted rounded-md w-1/3" />
-					<div className="h-4 bg-muted rounded-md w-1/2" />
+				<div className="mt-3 w-full space-y-2 animate-pulse">
+					<div className="h-3 bg-muted rounded-md w-1/3" />
+					<div className="h-3 bg-muted rounded-md w-1/2" />
 				</div>
 			)}
 
-			{getStatusText() && (
+			{/* Status Badge */}
+			{statusText && (
 				<div className="mt-2">
-					<Badge variant="outline" className="bg-blue-100 text-blue-800">
-						{getStatusText()}
+					<Badge
+						variant="outline"
+						className={`px-3 py-1 rounded-full text-sm shadow-sm 
+              ${
+								status === "ACTIVE"
+									? "bg-blue-100 text-blue-800 border-blue-200"
+									: status === "COMPLETED"
+									? "bg-green-100 text-green-800 border-green-200"
+									: "bg-gray-100 text-gray-800 border-gray-200"
+							}`}
+					>
+						{statusText}
 					</Badge>
 				</div>
 			)}

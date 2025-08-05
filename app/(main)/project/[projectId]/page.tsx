@@ -3,34 +3,34 @@ import { notFound } from "next/navigation";
 import SprintCreationForm from "../_components/create-sprint";
 import SprintBoard from "../_components/sprint-board";
 
-export default async function ProjectPage({ params }:any) {
-  const resolvedParams = await params; // This is the key change
+export default async function ProjectPage({ params }: any) {
+	
+  const { projectId } = await params;
 
-  const { projectId } = resolvedParams;
   const project = await getProject(projectId);
 
-  if (!project) {
-    notFound();
-  }
+	if (!project) {
+		notFound();
+	}
 
-  return (
-    <div className="container mx-auto">
-      <SprintCreationForm
-        projectTitle={project.name}
-        projectId={projectId}
-        projectKey={project.key}
-        sprintKey={project.sprints?.length + 1}
-      />
+	return (
+		<div className="container mx-auto">
+			<SprintCreationForm
+				projectTitle={project.name}
+				projectId={projectId}
+				projectKey={project.key}
+				sprintKey={project.sprints?.length + 1}
+			/>
 
-      {project.sprints.length > 0 ? (
-        <SprintBoard
-          sprints={project.sprints}
-          projectId={projectId}
-          orgId={project.organizationId}
-        />
-      ) : (
-        <div>Create a Sprint from button above</div>
-      )}
-    </div>
-  );
+			{project.sprints.length > 0 ? (
+				<SprintBoard
+					sprints={project.sprints}
+					projectId={projectId}
+					orgId={project.organizationId}
+				/>
+			) : (
+				<div>Create a Sprint from button above</div>
+			)}
+		</div>
+	);
 }

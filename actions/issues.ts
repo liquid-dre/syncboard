@@ -69,34 +69,50 @@ export async function createIssue(
 	return issue;
 }
 
+// export async function updateIssueOrder(updatedIssues: any) {
+// 	const { userId, orgId } = await auth();
+
+// 	if (!userId || !orgId) {
+// 		throw new Error("Unauthorized");
+// 	}
+
+// 	// Start a transaction
+// 	await db.$transaction(
+// 		async (prisma: {
+// 			issue: {
+// 				update: (arg0: {
+// 					where: { id: any };
+// 					data: { status: any; order: any };
+// 				}) => any;
+// 			};
+// 		}) => {
+// 			// Update each issue
+// 			for (const issue of updatedIssues) {
+// 				await prisma.issue.update({
+// 					where: { id: issue.id },
+// 					data: {
+// 						status: issue.status,
+// 						order: issue.order,
+// 					},
+// 				});
+// 			}
+// 		}
+// 	);
+
+// 	return { success: true };
+// }
+
 export async function updateIssueOrder(updatedIssues: any) {
 	const { userId, orgId } = await auth();
+	if (!userId || !orgId) throw new Error("Unauthorized");
 
-	if (!userId || !orgId) {
-		throw new Error("Unauthorized");
-	}
-
-	// Start a transaction
 	await db.$transaction(
-		async (prisma: {
-			issue: {
-				update: (arg0: {
-					where: { id: any };
-					data: { status: any; order: any };
-				}) => any;
-			};
-		}) => {
-			// Update each issue
-			for (const issue of updatedIssues) {
-				await prisma.issue.update({
-					where: { id: issue.id },
-					data: {
-						status: issue.status,
-						order: issue.order,
-					},
-				});
-			}
-		}
+		updatedIssues.map((issue: any) =>
+			db.issue.update({
+				where: { id: issue.id },
+				data: { status: issue.status, order: issue.order },
+			})
+		)
 	);
 
 	return { success: true };

@@ -34,7 +34,6 @@ export default function IssueDetailsDialog({
 	issue,
 	onDelete = () => {},
 	onUpdate = () => {},
-	borderCol = "",
 }: any) {
 	const [status, setStatus] = useState(issue.status);
 	const [priority, setPriority] = useState(issue.priority);
@@ -63,12 +62,12 @@ export default function IssueDetailsDialog({
 		}
 	};
 
-	const handleStatusChange = async (newStatus: any) => {
+	const handleStatusChange = async (newStatus: string) => {
 		setStatus(newStatus);
 		updateIssueFn(issue.id, { status: newStatus, priority });
 	};
 
-	const handlePriorityChange = async (newPriority: any) => {
+	const handlePriorityChange = async (newPriority: string) => {
 		setPriority(newPriority);
 		updateIssueFn(issue.id, { status, priority: newPriority });
 	};
@@ -81,7 +80,7 @@ export default function IssueDetailsDialog({
 		if (updated) {
 			onUpdate(updated);
 		}
-	}, [deleted, updated, deleteLoading, updateLoading]);
+	}, [deleted, updated]);
 
 	const canChange =
 		user?.id === issue.reporter.clerkUserId || membership?.role === "org:admin";
@@ -92,31 +91,53 @@ export default function IssueDetailsDialog({
 
 	const isProjectPage = !pathname.startsWith("/project/");
 
+	const getPriorityClass = (level: string) => {
+		switch (level) {
+			case "URGENT":
+				return "border-red-400 text-red-600";
+			case "HIGH":
+				return "border-orange-400 text-orange-600";
+			case "MEDIUM":
+				return "border-yellow-400 text-yellow-600";
+			default:
+				return "border-gray-300 text-gray-600";
+		}
+	};
+
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent>
-				<DialogHeader>
+			<DialogContent className="max-w-2xl rounded-xl p-6 shadow-lg">
+				<DialogHeader className="pb-3 border-b border-muted/20">
 					<div className="flex justify-between items-center">
-						<DialogTitle className="text-3xl">{issue.title}</DialogTitle>
+						<DialogTitle className="text-2xl font-semibold">
+							{issue.title}
+						</DialogTitle>
 						{isProjectPage && (
 							<Button
 								variant="ghost"
 								size="icon"
 								onClick={handleGoToProject}
 								title="Go to Project"
+								className="hover:bg-muted rounded-full"
 							>
-								<ExternalLink className="h-4 w-4" />
+								<ExternalLink className="h-5 w-5" />
 							</Button>
 						)}
 					</div>
 				</DialogHeader>
+
+				{/* Top loader */}
 				{(updateLoading || deleteLoading) && (
-					<BarLoader width={"100%"} color="#36d7b7" />
+					<div className="my-2">
+						<BarLoader width="100%" color="#36d7b7" />
+					</div>
 				)}
-				<div className="space-y-4">
-					<div className="flex items-center space-x-2">
+
+				<div className="space-y-6 mt-4">
+					{/* Status & Priority */}
+					<div className="flex items-center gap-4">
 						<Select value={status} onValueChange={handleStatusChange}>
-							<SelectTrigger className="">
+							<SelectTrigger className="min-w-[140px] border rounded-lg shadow-sm focus:ring-2 focus:ring-primary transition">
 								<SelectValue placeholder="Status" />
 							</SelectTrigger>
 							<SelectContent>
@@ -127,12 +148,17 @@ export default function IssueDetailsDialog({
 								))}
 							</SelectContent>
 						</Select>
+
 						<Select
 							value={priority}
 							onValueChange={handlePriorityChange}
 							disabled={!canChange}
 						>
-							<SelectTrigger className={`border ${borderCol} rounded`}>
+							<SelectTrigger
+								className={`min-w-[140px] border rounded-lg shadow-sm focus:ring-2 focus:ring-primary transition ${getPriorityClass(
+									priority
+								)}`}
+							>
 								<SelectValue placeholder="Priority" />
 							</SelectTrigger>
 							<SelectContent>
@@ -144,34 +170,45 @@ export default function IssueDetailsDialog({
 							</SelectContent>
 						</Select>
 					</div>
+
+					{/* Description */}
 					<div>
-						<h4 className="font-semibold">Description</h4>
-						<MDEditor.Markdown
-							className="rounded px-2 py-1"
-							source={issue.description ? issue.description : "--"}
-						/>
+						<h4 className="font-semibold mb-2">Description</h4>
+						<div className="bg-muted/20 rounded-md p-3 text-sm shadow-inner">
+							<MDEditor.Markdown
+								className="prose max-w-none"
+								source={issue.description || "--"}
+							/>
+						</div>
 					</div>
-					<div className="flex justify-between">
+
+					{/* Assignee & Reporter */}
+					<div className="flex justify-between gap-8">
 						<div className="flex flex-col gap-2">
-							<h4 className="font-semibold">Assignee</h4>
+							<h4 className="font-semibold text-sm">Assignee</h4>
 							<UserAvatar user={issue.assignee} />
 						</div>
 						<div className="flex flex-col gap-2">
-							<h4 className="font-semibold">Reporter</h4>
+							<h4 className="font-semibold text-sm">Reporter</h4>
 							<UserAvatar user={issue.reporter} />
 						</div>
 					</div>
+
+					{/* Delete Button */}
 					{canChange && (
 						<Button
 							onClick={handleDelete}
 							disabled={deleteLoading}
 							variant="destructive"
+							className="w-full mt-2"
 						>
 							{deleteLoading ? "Deleting..." : "Delete Issue"}
 						</Button>
 					)}
+
+					{/* Error Messages */}
 					{(deleteError || updateError) && (
-						<p className="text-red-500">
+						<p className="text-red-600 text-sm font-medium">
 							{deleteError?.message || updateError?.message}
 						</p>
 					)}
