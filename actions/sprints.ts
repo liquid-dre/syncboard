@@ -92,3 +92,26 @@ export async function fetchSprints(projectId: string) {
 	if (!res.ok) throw new Error("Failed to fetch sprints");
 	return res.json();
 }
+
+export async function deleteSprint(sprintId: string) {
+	const { userId, orgId } = await auth();
+
+	if (!userId || !orgId) {
+		throw new Error("Unauthorized");
+	}
+
+	const sprint = await db.sprint.findUnique({
+		where: { id: sprintId },
+		include: { project: true },
+	});
+
+	if (!sprint || sprint.project.organizationId !== orgId) {
+		throw new Error("Unauthorized or sprint not found");
+	}
+
+	await db.sprint.delete({
+		where: { id: sprintId },
+	});
+
+	return { success: true };
+}
