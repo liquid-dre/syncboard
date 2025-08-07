@@ -22,6 +22,9 @@ interface Issue {
 	status: string;
 	priority: Priority;
 	createdAt: string;
+	project: {
+		name: string;
+	};
 	assignee: {
 		name: string;
 		image?: string;
@@ -49,7 +52,7 @@ export default function IssueCard({
 	onUpdate = () => {},
 }: IssueCardProps) {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
-	const [currentIssue, setCurrentIssue] = useState(issue); // Local state
+	const [currentIssue, setCurrentIssue] = useState(issue);
 	const router = useRouter();
 
 	const onDeleteHandler = () => {
@@ -58,7 +61,7 @@ export default function IssueCard({
 	};
 
 	const onUpdateHandler = (updatedIssue: Issue) => {
-		setCurrentIssue(updatedIssue); // Update local card immediately
+		setCurrentIssue(updatedIssue);
 		router.refresh();
 		onUpdate(updatedIssue);
 	};
@@ -73,14 +76,15 @@ export default function IssueCard({
 				className={`cursor-pointer border-l-4 ${
 					priorityColor[currentIssue.priority]
 				} 
-          hover:shadow-lg hover:scale-[1.02] transition-all duration-200 
-          bg-slate-800/40 backdrop-blur-sm`}
+        hover:shadow-lg hover:scale-[1.02] transition-all duration-200 
+        bg-slate-800/40 backdrop-blur-sm`}
 				onClick={() => setIsDialogOpen(true)}
 			>
 				<CardHeader className="pb-2">
 					<CardTitle className="text-sm font-semibold text-white line-clamp-2">
 						{currentIssue.title}
 					</CardTitle>
+					<p className="text-xs text-gray-300">{currentIssue.project.name}</p>
 				</CardHeader>
 
 				<CardContent className="flex flex-wrap items-center gap-2 text-xs pb-2">
