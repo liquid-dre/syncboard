@@ -38,7 +38,7 @@ export default function Home() {
 	return (
 		<div className="min-h-screen">
 			{/* Hero Section */}
-			<section className="container mx-auto py-24 text-center">
+			<section className="flex-col justify-center items-center  min-h-screen mx-auto py-24 text-center flex ">
 				<h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold gradient-title pb-6">
 					Streamline Your Workflow
 					<br />

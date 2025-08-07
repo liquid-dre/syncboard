@@ -5,8 +5,12 @@ import OrgSwitcher from "@/components/org-switcher";
 import ProjectList from "./_components/project-list";
 import UserIssues from "./_components/user-issues";
 
-export default async function OrganizationPage({ params }:any) {
-	const { orgId } =  params;
+type Props = {
+	params: { orgId: string };
+};
+
+export default async function OrganizationPage({ params }: Props) {
+	const orgId =  (await params).orgId;
 	const { userId } = await auth();
 
 	if (!userId) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Select,
@@ -11,15 +11,16 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { isAfter, isBefore, format, formatDistanceToNow } from "date-fns";
-
 import useFetch from "@/hooks/use-fetch";
 import { useRouter, useSearchParams } from "next/navigation";
 import { updateSprintStatus } from "@/actions/sprints";
+import gsap from "gsap";
 
 export default function SprintManager({ sprint, setSprint, sprints }: any) {
 	const [status, setStatus] = useState(sprint.status);
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const sprintContainerRef = useRef<HTMLDivElement>(null);
 
 	const {
 		fn: updateStatus,
@@ -61,6 +62,7 @@ export default function SprintManager({ sprint, setSprint, sprints }: any) {
 
 		const selectedSprint = sprints.find((s: any) => String(s.id) === sprintId);
 		if (selectedSprint) {
+			animateSprintChange();
 			setSprint(selectedSprint);
 			setStatus(selectedSprint.status);
 		}
@@ -70,18 +72,35 @@ export default function SprintManager({ sprint, setSprint, sprints }: any) {
 		if (String(sprint.id) === value) return;
 		const selectedSprint = sprints.find((s: any) => String(s.id) === value);
 		if (selectedSprint) {
+			animateSprintChange();
 			setSprint(selectedSprint);
 			setStatus(selectedSprint.status);
+		}
+	};
+
+	const animateSprintChange = () => {
+		if (sprintContainerRef.current) {
+			gsap.fromTo(
+				sprintContainerRef.current,
+				{ opacity: 0, scale: 0.95 },
+				{
+					opacity: 1,
+					scale: 1,
+					duration: 0.5,
+					ease: "power2.out",
+				}
+			);
 		}
 	};
 
 	const statusText = getStatusText();
 
 	return (
-		<div className="flex flex-col gap-4 p-5 border rounded-xl bg-card shadow-md hover:shadow-lg transition-shadow">
-			{/* Header Row */}
+		<div
+			ref={sprintContainerRef}
+			className="flex flex-col gap-4 p-5 border rounded-xl bg-card shadow-md hover:shadow-lg transition-shadow"
+		>
 			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-				{/* Sprint Selector */}
 				<Select
 					value={String(sprint.id ?? "")}
 					onValueChange={handleSprintChange}
@@ -99,7 +118,6 @@ export default function SprintManager({ sprint, setSprint, sprints }: any) {
 					</SelectContent>
 				</Select>
 
-				{/* Action Buttons */}
 				<div className="flex gap-2">
 					{canStart && (
 						<Button
@@ -122,7 +140,6 @@ export default function SprintManager({ sprint, setSprint, sprints }: any) {
 				</div>
 			</div>
 
-			{/* Loading Skeleton */}
 			{loading && (
 				<div className="mt-3 w-full space-y-2 animate-pulse">
 					<div className="h-3 bg-muted rounded-md w-1/3" />
@@ -130,7 +147,6 @@ export default function SprintManager({ sprint, setSprint, sprints }: any) {
 				</div>
 			)}
 
-			{/* Status Badge */}
 			{statusText && (
 				<div className="mt-2">
 					<Badge
