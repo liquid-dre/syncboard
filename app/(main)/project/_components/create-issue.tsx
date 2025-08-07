@@ -66,7 +66,18 @@ export default function IssueCreationDrawer({
 	useEffect(() => {
 		if (isOpen && orgId) {
 			fetchUsers(orgId);
+			document.body.classList.add("keep-scroll");
+		} else {
+			document.body.classList.remove("keep-scroll");
 		}
+
+		// Cleanup: defer to ensure it's last
+		return () => {
+			setTimeout(() => {
+				document.body.classList.remove("keep-scroll");
+				document.body.style.overflow = "auto"; // force-reset
+			}, 10); // small delay ensures cleanup happens after library cleanup
+		};
 	}, [isOpen, orgId]);
 
 	const onSubmit = async (data: any) => {

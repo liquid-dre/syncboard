@@ -152,6 +152,11 @@
 	color: inherit;
 }
 
+/* Keep body scroll when drawer is open */
+body.keep-scroll {
+	overflow: auto !important;
+}
+
 .wmde-markdown ul {
 	list-style-type: disc;
 	padding-left: 15px !important;

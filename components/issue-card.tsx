@@ -84,7 +84,6 @@ export default function IssueCard({
 					<CardTitle className="text-sm font-semibold text-white line-clamp-2">
 						{currentIssue.title}
 					</CardTitle>
-					<p className="text-xs text-gray-300">{currentIssue.project.name}</p>
 				</CardHeader>
 
 				<CardContent className="flex flex-wrap items-center gap-2 text-xs pb-2">
