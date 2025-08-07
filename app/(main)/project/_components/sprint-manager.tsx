@@ -15,6 +15,8 @@ import useFetch from "@/hooks/use-fetch";
 import { useRouter, useSearchParams } from "next/navigation";
 import { updateSprintStatus } from "@/actions/sprints";
 import gsap from "gsap";
+import { CircleOff, Pause, Play, RotateCcw, Square } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SprintManager({ sprint, setSprint, sprints }: any) {
 	const [status, setStatus] = useState(sprint.status);
@@ -35,6 +37,9 @@ export default function SprintManager({ sprint, setSprint, sprints }: any) {
 	const canStart =
 		isBefore(now, endDate) && isAfter(now, startDate) && status === "PLANNED";
 	const canEnd = status === "ACTIVE";
+	const canHold = status === "ACTIVE";
+	const canResume = status === "ON_HOLD";
+	const canEndFromHold = status === "ON_HOLD";
 
 	const handleStatusChange = (newStatus: string) => {
 		updateStatus(sprint.id, newStatus);
@@ -48,11 +53,55 @@ export default function SprintManager({ sprint, setSprint, sprints }: any) {
 	}, [updatedStatus]);
 
 	const getStatusText = () => {
-		if (status === "COMPLETED") return `Sprint Ended`;
-		if (status === "ACTIVE" && isAfter(now, endDate))
-			return `Overdue by ${formatDistanceToNow(endDate)}`;
-		if (status === "PLANNED" && isBefore(now, startDate))
-			return `Starts in ${formatDistanceToNow(startDate)}`;
+		if (status === "COMPLETED") {
+			return {
+				text: "Sprint Ended",
+				color: "#C40B0B",
+				bg: "bg-red-100",
+				textColor: "text-red-800",
+				border: "border-[##C40B0B]",
+			};
+		}
+
+		if (status === "ON_HOLD") {
+			return {
+				text: "On Hold",
+				color: "#FACC15",
+				bg: "bg-yellow-100",
+				textColor: "text-yellow-800",
+				border: "border-[#FACC15]",
+			};
+		}
+
+		if (status === "ACTIVE") {
+			if (isAfter(now, endDate)) {
+				return {
+					text: `Overdue by ${formatDistanceToNow(endDate)}`,
+					color: "#C40B0B",
+					bg: "bg-red-100",
+					textColor: "text-red-800",
+					border: "border-[#C40B0B]",
+				};
+			}
+			return {
+				text: "Healthy",
+				color: "#57DA2F",
+				bg: "bg-green-100",
+				textColor: "text-green-800",
+				border: "border-[#57DA2F]",
+			};
+		}
+
+		if (status === "PLANNED" && isBefore(now, startDate)) {
+			return {
+				text: `Starts in ${formatDistanceToNow(startDate)}`,
+				color: "#9CA3AF",
+				bg: "bg-gray-100",
+				textColor: "text-gray-800",
+				border: "border-gray-300",
+			};
+		}
+
 		return null;
 	};
 
@@ -93,74 +142,105 @@ export default function SprintManager({ sprint, setSprint, sprints }: any) {
 		}
 	};
 
-	const statusText = getStatusText();
+	const statusInfo = getStatusText();
 
 	return (
 		<div
 			ref={sprintContainerRef}
 			className="flex flex-col gap-4 p-5 border rounded-xl bg-card shadow-md hover:shadow-lg transition-shadow"
 		>
-			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-				<Select
-					value={String(sprint.id ?? "")}
-					onValueChange={handleSprintChange}
+			<div className="relative">
+				{/* Main Content */}
+				<div
+					className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-opacity duration-300 ${
+						loading ? "opacity-50 pointer-events-none" : ""
+					}`}
 				>
-					<SelectTrigger className="bg-background border border-border hover:border-primary focus:ring-2 focus:ring-primary transition text-sm min-w-[260px] rounded-lg shadow-sm">
-						<SelectValue placeholder="Select Sprint" />
-					</SelectTrigger>
-					<SelectContent>
-						{sprints.map((s: any) => (
-							<SelectItem key={s.id} value={String(s.id)}>
-								{s.name} ({format(s.startDate, "MMM d, yyyy")} –{" "}
-								{format(s.endDate, "MMM d, yyyy")})
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
+					<Select
+						value={String(sprint.id ?? "")}
+						onValueChange={handleSprintChange}
+					>
+						<SelectTrigger className="bg-background border border-border hover:border-primary focus:ring-2 focus:ring-primary transition text-sm min-w-[260px] rounded-lg shadow-sm">
+							<SelectValue placeholder="Select Sprint" />
+						</SelectTrigger>
+						<SelectContent>
+							{sprints.map((s: any) => (
+								<SelectItem key={s.id} value={String(s.id)}>
+									{s.name} ({format(s.startDate, "MMM d, yyyy")} –{" "}
+									{format(s.endDate, "MMM d, yyyy")})
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
 
-				<div className="flex gap-2">
-					{canStart && (
-						<Button
-							onClick={() => handleStatusChange("ACTIVE")}
-							disabled={loading}
-							className="bg-green-600 hover:bg-green-700 text-white transition-all shadow-sm"
-						>
-							Start Sprint
-						</Button>
-					)}
-					{canEnd && (
-						<Button
-							onClick={() => handleStatusChange("COMPLETED")}
-							disabled={loading}
-							className="bg-red-600 hover:bg-red-700 text-white transition-all shadow-sm"
-						>
-							End Sprint
-						</Button>
-					)}
+					<div className="flex gap-2 flex-wrap w-full sm:w-auto">
+						{canStart && (
+							<Button
+								onClick={() => handleStatusChange("ACTIVE")}
+								disabled={loading}
+								className="bg-gradient-to-r from-[#43ce19] to-[#3cae16] text-white font-medium rounded-md shadow hover:scale-[1.02] hover:shadow-lg transition"
+							>
+								<Play className="w-4 h-4 mr-2" />
+								Start Sprint
+							</Button>
+						)}
+
+						{canResume && (
+							<Button
+								onClick={() => handleStatusChange("ACTIVE")}
+								disabled={loading}
+								className="bg-gradient-to-r from-[#43ce19] to-[#3cae16] text-white font-medium rounded-md shadow hover:scale-[1.02] hover:shadow-lg transition"
+							>
+								<RotateCcw className="w-4 h-4 mr-2" />
+								Resume Sprint
+							</Button>
+						)}
+
+						{canHold && (
+							<Button
+								onClick={() => handleStatusChange("ON_HOLD")}
+								disabled={loading}
+								className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-medium rounded-md shadow hover:scale-[1.02] hover:shadow-lg transition"
+							>
+								<Pause className="w-4 h-4 mr-2" />
+								Put on Hold
+							</Button>
+						)}
+
+						{(canEnd || canEndFromHold) && (
+							<Button
+								onClick={() => handleStatusChange("COMPLETED")}
+								disabled={loading}
+								className="bg-gradient-to-r from-[#C40B0B] to-[#9b0a0a] text-white font-medium rounded-md shadow hover:scale-[1.02] hover:shadow-lg transition ml-auto"
+							>
+								<CircleOff className="w-4 h-4 mr-2" />
+								End Sprint
+							</Button>
+						)}
+					</div>
 				</div>
+
+				{/* Loading Overlay */}
+				{loading && (
+					<div className="mt-4 w-full p-4 rounded-xl border border-muted bg-muted/20 shadow-sm space-y-3">
+						<Skeleton className="h-4 w-2/5 rounded-md" />
+						<Skeleton className="h-3 w-3/5 rounded-md" />
+						<Skeleton className="h-8 w-24 mt-2 rounded-md" />
+					</div>
+				)}
 			</div>
 
-			{loading && (
-				<div className="mt-3 w-full space-y-2 animate-pulse">
-					<div className="h-3 bg-muted rounded-md w-1/3" />
-					<div className="h-3 bg-muted rounded-md w-1/2" />
-				</div>
-			)}
-
-			{statusText && (
+			{statusInfo && (
 				<div className="mt-2">
 					<Badge
 						variant="outline"
-						className={`px-3 py-1 rounded-full text-sm shadow-sm 
-              ${
-								status === "ACTIVE"
-									? "bg-blue-100 text-blue-800 border-blue-200"
-									: status === "COMPLETED"
-									? "bg-green-100 text-green-800 border-green-200"
-									: "bg-gray-100 text-gray-800 border-gray-200"
-							}`}
+						className={`
+							px-3 py-1 rounded-full text-sm font-medium shadow-sm border
+							${statusInfo.bg} ${statusInfo.textColor}
+							`}
+						style={{ borderColor: statusInfo.color }}
 					>
-						{statusText}
+						{statusInfo.text}
 					</Badge>
 				</div>
 			)}

@@ -11,9 +11,11 @@ export async function getOrganization(slug: any) {
 		throw new Error("Unauthorized");
 	}
 
-	const user = await db.user.findUnique({
-		where: { clerkUserId: userId },
-	});
+	// const user = await db.user.findUnique({
+	// 	where: { clerkUserId: userId },
+	// });
+
+	const user = await getOrCreateUser(userId); 
 
 	if (!user) {
 		throw new Error("User not found");
@@ -47,6 +49,24 @@ export async function getOrganization(slug: any) {
 	}
 
 	return organization;
+}
+
+export async function getOrCreateUser(clerkUserId: string) {
+	let user = await db.user.findUnique({ where: { clerkUserId } });
+
+	if (!user) {
+		const clerkUser = await (await clerkClient()).users.getUser(clerkUserId);
+		user = await db.user.create({
+			data: {
+				clerkUserId: clerkUser.id,
+				email: clerkUser.emailAddresses[0].emailAddress,
+				name: clerkUser.firstName ?? "Unnamed",
+				imageUrl: clerkUser.imageUrl,
+			},
+		});
+	}
+
+	return user;
 }
 
 export async function getProjects(orgId: any) {

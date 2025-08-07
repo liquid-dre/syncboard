@@ -83,6 +83,7 @@ enum SprintStatus {
   PLANNED
   ACTIVE
   COMPLETED
+  ON_HOLD
 }
 
 enum IssueStatus {
