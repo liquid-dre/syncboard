@@ -78,12 +78,21 @@ const CreateSprint = ({
 				</div>
 
 				<Button
-					className={`relative overflow-hidden mt-2 px-6 py-3 rounded-xl font-semibold text-white shadow-lg transition-all duration-300 
-            ${
-							!showForm
-								? "bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 hover:scale-105 hover:shadow-xl"
-								: "bg-gradient-to-r from-red-500 to-pink-600 hover:scale-115 hover:shadow-xl"
-						}`}
+					className={`
+    relative overflow-hidden mt-2 px-6 py-3 rounded-2xl font-semibold text-white 
+    transition-all duration-300 ease-in-out 
+    border border-gray-300 dark:border-gray-700 
+    shadow-md
+
+    ${
+			!showForm
+				? "bg-gradient-to-r from-[#e96614] to-[#bf1363]"
+				: "bg-gradient-to-r from-red-500 to-pink-600"
+		}
+
+    hover:scale-[1.05] hover:shadow-[0_0_25px_rgba(233,102,20,0.4)]
+    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e96614]
+  `}
 					onClick={() => setShowForm(!showForm)}
 				>
 					<span className="relative z-10">
