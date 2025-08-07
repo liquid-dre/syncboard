@@ -86,3 +86,9 @@ export async function updateSprintStatus(sprintId: any, newStatus: any) {
 		}
 	}
 }
+
+export async function fetchSprints(projectId: string) {
+	const res = await fetch(`/api/sprints?projectId=${projectId}`);
+	if (!res.ok) throw new Error("Failed to fetch sprints");
+	return res.json();
+}

@@ -2,6 +2,8 @@ import { getProject } from "@/actions/projects";
 import { notFound } from "next/navigation";
 import SprintCreationForm from "../_components/create-sprint";
 import SprintBoard from "../_components/sprint-board";
+import { useEffect, useState } from "react";
+import { fetchSprints } from "@/actions/sprints";
 
 export default async function ProjectPage({ params }: any) {
 	
@@ -12,6 +14,7 @@ export default async function ProjectPage({ params }: any) {
 	if (!project) {
 		notFound();
 	}
+	
 
 	return (
 		<div className="container mx-auto">

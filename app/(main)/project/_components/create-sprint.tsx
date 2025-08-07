@@ -121,7 +121,6 @@ const CreateSprint = ({
 								<Input
 									id="name"
 									{...register("name")}
-									readOnly
 									className="bg-slate-950 border border-slate-700 focus:ring-2 focus:ring-blue-500"
 								/>
 								{errors.name && (
