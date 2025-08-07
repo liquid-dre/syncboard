@@ -7,7 +7,7 @@ import { fetchSprints } from "@/actions/sprints";
 
 export default async function ProjectPage({ params }: any) {
 	
-  const { projectId } = await params;
+  const { projectId } = params;
 
   const project = await getProject(projectId);
 
