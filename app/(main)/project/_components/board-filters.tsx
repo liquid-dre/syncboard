@@ -12,6 +12,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { IssueStatus } from "@/lib/generated/prisma";
 
 // Types
 export interface Assignee {
@@ -25,7 +26,7 @@ export interface Issue {
 	title: string;
 	priority: string;
 	assignee: Assignee;
-	status: string;
+	status: IssueStatus;
 	order: number;
 }
 

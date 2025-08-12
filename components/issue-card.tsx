@@ -9,17 +9,18 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import {formatDistanceToNow} from "@/node_modules/date-fns/formatDistanceToNow";
+import { formatDistanceToNow } from "@/node_modules/date-fns/formatDistanceToNow";
 import IssueDetailsDialog from "./issue-details-dialog";
 import UserAvatar from "./user-avatar";
 import { useRouter } from "next/navigation";
+import { IssueStatus } from "@/lib/generated/prisma";
 
 type Priority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
 
 interface Issue {
 	id: string;
 	title: string;
-	status: string;
+	status: IssueStatus;
 	priority: Priority;
 	createdAt: string;
 	project: {

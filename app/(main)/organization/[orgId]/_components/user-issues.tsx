@@ -2,11 +2,12 @@ import { Suspense } from "react";
 import { getUserIssues } from "@/actions/organizations";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import IssueCard from "@/components/issue-card";
+import { IssueStatus } from "@/lib/generated/prisma";
 
 type IssueWithRelations = {
 	id: string;
 	title: string;
-	status: string;
+	status: IssueStatus;
 	priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
 	createdAt: string;
 	description: string | null;
@@ -88,7 +89,7 @@ function IssueGrid({ issues }: { issues: IssueWithRelations[] }) {
 	type CardIssue = {
 		id: string;
 		title: string;
-		status: string;
+		status: IssueStatus;
 		priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
 		createdAt: string;
 		project: { name: string };

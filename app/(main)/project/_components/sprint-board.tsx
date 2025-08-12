@@ -18,8 +18,9 @@ import { getIssuesForSprint, updateIssueOrder } from "@/actions/issues";
 import SprintManager from "./sprint-manager";
 import IssueCreationDrawer from "./create-issue";
 import IssueCard from "@/components/issue-card";
-// import BoardFilters from "./board-filters";
 import BoardFilters, { Issue as FilterIssue } from "./board-filters";
+import { IssueStatus } from "@/lib/generated/prisma";
+
 type Sprint = {
 	id: string;
 	name: string;
@@ -77,7 +78,7 @@ export default function SprintBoard({
 	// const [selectedStatus, setSelectedStatus] = useState(null);
 
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-	const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+	const [selectedStatus, setSelectedStatus] = useState<IssueStatus | null>(null);
 
 	const {
 		loading: issuesLoading,
@@ -121,7 +122,7 @@ export default function SprintBoard({
 	// 	setIsDrawerOpen(true);
 	// };
 
-	const handleAddIssue = (status: string) => {
+	const handleAddIssue = (status: IssueStatus) => {
 		setSelectedStatus(status);
 		setIsDrawerOpen(true);
 	};
@@ -337,7 +338,7 @@ export default function SprintBoard({
 										?.filter(
 											(issue: { status: string }) => issue.status === column.key
 										)
-										.map((issue: Issue, index: number) => (
+										.map((issue, index) => (
 											<Draggable
 												key={issue.id}
 												draggableId={String(issue.id)}
@@ -372,7 +373,7 @@ export default function SprintBoard({
 											<Button
 												variant="ghost"
 												className="w-full"
-												onClick={() => handleAddIssue(column.key)}
+												onClick={() => handleAddIssue(column.key as IssueStatus)}
 											>
 												<Plus className="mr-2 h-4 w-4" />
 												Create Issue
@@ -392,7 +393,7 @@ export default function SprintBoard({
 				// status={selectedStatus}
 				// projectId={projectId}
                                 sprintId={currentSprint.id}
-                                status={selectedStatus || "TODO"}
+                                status={selectedStatus ?? "TODO"}
                                 projectId={projectId}
 				onIssueCreated={handleIssueCreated}
 				orgId={orgId}
