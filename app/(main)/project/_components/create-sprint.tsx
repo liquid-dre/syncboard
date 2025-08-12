@@ -19,13 +19,23 @@ import {
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
+import { z } from "zod";
+
+type SprintForm = z.infer<typeof sprintSchema>;
+
+interface CreateSprintProps {
+	projectTitle: string;
+	projectKey: string;
+	projectId: string;
+	sprintKey: number;
+}
 
 const CreateSprint = ({
 	projectTitle,
 	projectKey,
 	projectId,
 	sprintKey,
-}: any) => {
+}: CreateSprintProps) => {
 	const [showForm, setShowForm] = useState(false);
 
 	const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
@@ -44,7 +54,7 @@ const CreateSprint = ({
 		handleSubmit,
 		setValue,
 		formState: { errors },
-	} = useForm({
+	} = useForm<SprintForm>({
 		resolver: zodResolver(sprintSchema),
 		defaultValues: {
 			name: `${projectKey}-${sprintKey}`,
@@ -53,7 +63,7 @@ const CreateSprint = ({
 		},
 	});
 
-	const onSubmit = async (data: any) => {
+	const onSubmit = async (data: SprintForm) => {
 		await createSprintFn(projectId, {
 			...data,
 			startDate: dateRange.from,

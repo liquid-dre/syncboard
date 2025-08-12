@@ -10,17 +10,34 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-// import { isAfter, isBefore, format, formatDistanceToNow } from "date-fns";
 import { isAfter, isBefore, format } from "date-fns";
-import {formatDistanceToNow} from "@/node_modules/date-fns/formatDistanceToNow";
+import { formatDistanceToNow } from "@/node_modules/date-fns/formatDistanceToNow";
 import useFetch from "@/hooks/use-fetch";
-import {  useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { updateSprintStatus } from "@/actions/sprints";
 import gsap from "gsap";
 import { CircleOff, Pause, Play, RotateCcw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function SprintManager({ sprint, setSprint, sprints }: any) {
+type Sprint = {
+	id: string;
+	name: string;
+	status: string;
+	startDate: string | Date;
+	endDate: string | Date;
+};
+
+interface SprintManagerProps {
+	sprint: Sprint;
+	setSprint: (s: Sprint) => void;
+	sprints: Sprint[];
+}
+
+export default function SprintManager({
+	sprint,
+	setSprint,
+	sprints,
+}: SprintManagerProps) {
 	const [status, setStatus] = useState(sprint.status);
 	const searchParams = useSearchParams();
 	const sprintContainerRef = useRef<HTMLDivElement>(null);
@@ -51,7 +68,7 @@ export default function SprintManager({ sprint, setSprint, sprints }: any) {
 			setStatus(updatedStatus.sprint.status);
 			setSprint({ ...sprint, status: updatedStatus.sprint.status });
 		}
-	}, [updatedStatus]);
+        }, [updatedStatus, sprint, setSprint]);
 
 	const getStatusText = () => {
 		if (status === "COMPLETED") {
@@ -110,7 +127,7 @@ export default function SprintManager({ sprint, setSprint, sprints }: any) {
 		const sprintId = searchParams.get("sprint");
 		if (!sprintId || String(sprint.id) === sprintId) return;
 
-		const selectedSprint = sprints.find((s: any) => String(s.id) === sprintId);
+		const selectedSprint = sprints.find((s) => String(s.id) === sprintId);
 		if (selectedSprint) {
 			animateSprintChange();
 			setSprint(selectedSprint);
@@ -120,7 +137,7 @@ export default function SprintManager({ sprint, setSprint, sprints }: any) {
 
 	const handleSprintChange = (value: string) => {
 		if (String(sprint.id) === value) return;
-		const selectedSprint = sprints.find((s: any) => String(s.id) === value);
+		const selectedSprint = sprints.find((s) => String(s.id) === value);
 		if (selectedSprint) {
 			animateSprintChange();
 			setSprint(selectedSprint);
@@ -165,7 +182,7 @@ export default function SprintManager({ sprint, setSprint, sprints }: any) {
 							<SelectValue placeholder="Select Sprint" />
 						</SelectTrigger>
 						<SelectContent>
-							{sprints.map((s: any) => (
+							{sprints.map((s) => (
 								<SelectItem key={s.id} value={String(s.id)}>
 									{s.name} ({format(s.startDate, "MMM d, yyyy")} –{" "}
 									{format(s.endDate, "MMM d, yyyy")})

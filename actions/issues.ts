@@ -27,7 +27,7 @@ export async function createIssue(
 	data: {
 		status: any;
 		title: any;
-		description: any;
+		description?: any;
 		priority: any;
 		sprintId: any;
 		assigneeId: any;

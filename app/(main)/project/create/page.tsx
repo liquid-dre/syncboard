@@ -14,6 +14,9 @@ import { createProject } from "@/actions/projects";
 import { BarLoader } from "react-spinners";
 import OrgSwitcher from "@/components/org-switcher";
 import { toast } from "sonner";
+import { z } from "zod";
+
+type ProjectFormValues = z.infer<typeof projectSchema>;
 
 export default function CreateProjectPage() {
 	const router = useRouter();
@@ -25,7 +28,7 @@ export default function CreateProjectPage() {
 		register,
 		handleSubmit,
 		formState: { errors },
-	} = useForm({
+	} = useForm<ProjectFormValues>({
 		resolver: zodResolver(projectSchema),
 	});
 
@@ -42,13 +45,13 @@ export default function CreateProjectPage() {
 		fn: createProjectFn,
 	} = useFetch(createProject);
 
-	const onSubmit = async (data: any) => {
+	const onSubmit = async (data: ProjectFormValues) => {
 		if (!isAdmin) {
 			alert("Only organization admins can create projects");
 			return;
 		}
 
-		createProjectFn(data);
+		createProjectFn({ ...data, description: data.description || "" });
 	};
 
 	useEffect(() => {
@@ -56,7 +59,14 @@ export default function CreateProjectPage() {
 			toast.success("Project created successfully");
 			router.push(`/project/${project.id}`);
 		}
-	}, [loading]);
+	}, [project, router]);
+
+	useEffect(() => {
+		if (project) {
+			toast.success("Project created successfully");
+			router.push(`/project/${project.id}`);
+		}
+	}, [project, router]); // ✅ fixed dependencies
 
 	if (!isOrgLoaded || !isUserLoaded) {
 		return null;
@@ -74,7 +84,7 @@ export default function CreateProjectPage() {
 	}
 
 	return (
-		<div className="min-h-screen  text-gray-100 flex items-center justify-center p-4">
+		<div className="min-h-screen text-gray-100 flex items-center justify-center p-4">
 			<div className="max-w-xl w-full bg-gray-800 rounded-xl shadow-2xl p-8 sm:p-10 border border-gray-700">
 				<h1 className="text-4xl sm:text-5xl font-extrabold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
 					Create New Project
@@ -116,8 +126,8 @@ export default function CreateProjectPage() {
 							{...register("key")}
 							className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
 							placeholder="e.g., SCBP (4 characters)"
-							maxLength={4} // Enforce max length visually
-							autoCapitalize="characters" // Suggest uppercase
+							maxLength={4}
+							autoCapitalize="characters"
 						/>
 						{errors.key && (
 							<p className="text-red-400 text-sm mt-2">{errors.key.message}</p>
@@ -148,8 +158,7 @@ export default function CreateProjectPage() {
 					{/* Loading Indicator */}
 					{loading && (
 						<div className="flex justify-center py-4">
-							<BarLoader width={150} color="#36d7b7" />{" "}
-							{/* Fixed width for loader */}
+							<BarLoader width={150} color="#36d7b7" />
 						</div>
 					)}
 

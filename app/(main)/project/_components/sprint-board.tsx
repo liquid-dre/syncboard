@@ -4,7 +4,12 @@ import { useState, useEffect, useCallback } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BarLoader } from "react-spinners";
-import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import {
+	DragDropContext,
+	Draggable,
+	Droppable,
+	DropResult,
+} from "@hello-pangea/dnd";
 import useFetch from "@/hooks/use-fetch";
 
 import statuses from "@/data/status.json";
@@ -13,7 +18,26 @@ import { getIssuesForSprint, updateIssueOrder } from "@/actions/issues";
 import SprintManager from "./sprint-manager";
 import IssueCreationDrawer from "./create-issue";
 import IssueCard from "@/components/issue-card";
-import BoardFilters from "./board-filters";
+// import BoardFilters from "./board-filters";
+import BoardFilters, { Issue as FilterIssue } from "./board-filters";
+type Sprint = {
+	id: string;
+	name: string;
+	status: string;
+	startDate: string | Date;
+	endDate: string | Date;
+};
+
+export interface Issue extends Omit<FilterIssue, "assignee" | "priority"> {
+	priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+	assignee: { id: string; name: string; image?: string; clerkUserId: string };
+	createdAt: string;
+	project: { name: string };
+	description: string | null;
+	projectId: string;
+	reporter: { name: string; imageUrl?: string; clerkUserId: string };
+	sprintId?: string | null;
+}
 
 export interface Assignee {
 	id: string;
@@ -21,23 +45,39 @@ export interface Assignee {
 	imageUrl?: string;
 }
 
-export interface Issue {
-	id: string;
-	title: string;
-	priority: string;
-	assignee: Assignee;
-	status: string;
-	order: number;
+// export interface Issue {
+// 	id: string;
+// 	title: string;
+// 	priority: string;
+// 	assignee: Assignee;
+// 	status: string;
+// 	order: number;
+// }
+interface SprintBoardProps {
+	sprints: Sprint[];
+	projectId: string;
+	orgId: string;
 }
 
-export default function SprintBoard({ sprints, projectId, orgId }: any) {
+// export default function SprintBoard({ sprints, projectId, orgId }: any) {
+// 	const [currentSprint, setCurrentSprint] = useState(
+// 		sprints.find((spr: { status: string }) => spr.status === "ACTIVE") ||
+// 			sprints[0]
+// 	);
+export default function SprintBoard({
+	sprints,
+	projectId,
+	orgId,
+}: SprintBoardProps) {
 	const [currentSprint, setCurrentSprint] = useState(
-		sprints.find((spr: { status: string }) => spr.status === "ACTIVE") ||
-			sprints[0]
+		sprints.find((spr) => spr.status === "ACTIVE") || sprints[0]
 	);
 
+	// const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+	// const [selectedStatus, setSelectedStatus] = useState(null);
+
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-	const [selectedStatus, setSelectedStatus] = useState(null);
+	const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
 
 	const {
 		loading: issuesLoading,
@@ -46,6 +86,8 @@ export default function SprintBoard({ sprints, projectId, orgId }: any) {
 		data: issues,
 		setData: setIssues,
 	} = useFetch(getIssuesForSprint);
+
+	// const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
 
 	const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
 
@@ -59,8 +101,12 @@ export default function SprintBoard({ sprints, projectId, orgId }: any) {
 	// 	setFilteredIssues(newFilteredIssues);
 	// };
 
-	const handleFilterChange = useCallback((newFilteredIssues: Issue[]) => {
-		setFilteredIssues(newFilteredIssues);
+	// const handleFilterChange = useCallback((newFilteredIssues: Issue[]) => {
+	// 	setFilteredIssues(newFilteredIssues);
+	// }, []);
+
+	const handleFilterChange = useCallback((newFilteredIssues: FilterIssue[]) => {
+		setFilteredIssues(newFilteredIssues as Issue[]);
 	}, []);
 
 	useEffect(() => {
@@ -70,7 +116,12 @@ export default function SprintBoard({ sprints, projectId, orgId }: any) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentSprint.id]);
 
-	const handleAddIssue = (status: any) => {
+	// const handleAddIssue = (status: any) => {
+	// 	setSelectedStatus(status);
+	// 	setIsDrawerOpen(true);
+	// };
+
+	const handleAddIssue = (status: string) => {
 		setSelectedStatus(status);
 		setIsDrawerOpen(true);
 	};
@@ -144,7 +195,7 @@ export default function SprintBoard({ sprints, projectId, orgId }: any) {
 
 	// 	await updateIssueOrderFn(merged);
 	// };
-	const onDragEnd = async (result: any) => {
+	const onDragEnd = async (result: DropResult) => {
 		const { source, destination } = result;
 
 		if (!destination) return;
@@ -239,16 +290,27 @@ export default function SprintBoard({ sprints, projectId, orgId }: any) {
 
 	return (
 		<div className="flex flex-col">
-			<SprintManager
+			{/* <SprintManager
 				sprint={currentSprint}
 				setSprint={setCurrentSprint}
 				sprints={sprints}
 				projectId={projectId}
+			/> */}
+			<SprintManager
+				sprint={currentSprint}
+				setSprint={setCurrentSprint}
+				sprints={sprints}
 			/>
 
 			{/* Issues */}
-			{issues && !issuesLoading && (
+			{/* {issues && !issuesLoading && (
 				<BoardFilters issues={issues} onFilterChange={handleFilterChange} />
+			)} */}
+			{issues && !issuesLoading && (
+				<BoardFilters
+					issues={issues as FilterIssue[]}
+					onFilterChange={handleFilterChange}
+				/>
 			)}
 
 			{updateIssuesError && (
@@ -275,7 +337,7 @@ export default function SprintBoard({ sprints, projectId, orgId }: any) {
 										?.filter(
 											(issue: { status: string }) => issue.status === column.key
 										)
-										.map((issue: any, index: number) => (
+										.map((issue: Issue, index: number) => (
 											<Draggable
 												key={issue.id}
 												draggableId={String(issue.id)}
@@ -326,9 +388,12 @@ export default function SprintBoard({ sprints, projectId, orgId }: any) {
 			<IssueCreationDrawer
 				isOpen={isDrawerOpen}
 				onClose={() => setIsDrawerOpen(false)}
-				sprintId={currentSprint.id}
-				status={selectedStatus}
-				projectId={projectId}
+				// sprintId={currentSprint.id}
+				// status={selectedStatus}
+				// projectId={projectId}
+                                sprintId={currentSprint.id}
+                                status={selectedStatus || "TODO"}
+                                projectId={projectId}
 				onIssueCreated={handleIssueCreated}
 				orgId={orgId}
 			/>
