@@ -1,7 +1,6 @@
 "use client";
 
 import { OrganizationList } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import React from "react";
 
 const Onboarding = () => {

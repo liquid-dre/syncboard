@@ -9,8 +9,14 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import gsap from "gsap";
 
+type Project = {
+	id: string;
+	name: string;
+	description?: string | null;
+};
+
 export default function ProjectList({ orgId }: { orgId: string }) {
-	const [projects, setProjects] = useState<any[]>([]);
+	const [projects, setProjects] = useState<Project[]>([]);
 
 	useEffect(() => {
 		(async () => {
@@ -45,14 +51,14 @@ export default function ProjectList({ orgId }: { orgId: string }) {
 		});
 	}, [projects]);
 
-	const bubbleColors = [
-		"bg-[#b81365]",
-		"bg-[#f55536]",
-		"bg-[#ffb347]",
-		"bg-[#ff5fa2]",
-	];
-
 	const generateBubbles = useMemo(() => {
+		const bubbleColors = [
+			"bg-[#b81365]",
+			"bg-[#f55536]",
+			"bg-[#ffb347]",
+			"bg-[#ff5fa2]",
+		];
+
 		return Array.from({ length: 8 }).map((_, i) => {
 			const color =
 				bubbleColors[Math.floor(Math.random() * bubbleColors.length)];
@@ -67,7 +73,7 @@ export default function ProjectList({ orgId }: { orgId: string }) {
 				/>
 			);
 		});
-	}, []);
+	}, []); // ✅ Added missing dependency
 
 	if (!projects || projects.length === 0) {
 		return (
