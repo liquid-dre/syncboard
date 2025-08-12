@@ -20,6 +20,7 @@ import IssueCreationDrawer from "./create-issue";
 import IssueCard from "@/components/issue-card";
 import BoardFilters, { Issue as FilterIssue } from "./board-filters";
 import { IssueStatus } from "@/lib/generated/prisma";
+import type { IssueWithRelations } from "@/lib/types/issues";
 
 type Sprint = {
 	id: string;
@@ -29,22 +30,23 @@ type Sprint = {
 	endDate: string | Date;
 };
 
-export interface Issue extends Omit<FilterIssue, "assignee" | "priority"> {
-	priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
-	assignee: { id: string; name: string; image?: string; clerkUserId: string };
-	createdAt: string;
-	project: { name: string };
-	description: string | null;
-	projectId: string;
-	reporter: { name: string; imageUrl?: string; clerkUserId: string };
-	sprintId?: string | null;
-}
+// export interface Issue extends Omit<FilterIssue, "assignee" | "priority"> {
+// 	priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+// 	assignee: { id: string; name: string; image?: string; clerkUserId: string };
+// 	createdAt: string;
+// 	project: { name: string };
+// 	description: string | null;
+// 	projectId: string;
+// 	reporter: { name: string; imageUrl?: string; clerkUserId: string };
+// 	sprintId?: string | null;
+// }
 
-export interface Assignee {
-	id: string;
-	name: string;
-	imageUrl?: string;
-}
+// export interface Assignee {
+// 	id: string;
+// 	name: string;
+// 	imageUrl?: string;
+// }
+type Issue = IssueWithRelations;
 
 // export interface Issue {
 // 	id: string;
@@ -78,7 +80,9 @@ export default function SprintBoard({
 	// const [selectedStatus, setSelectedStatus] = useState(null);
 
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-	const [selectedStatus, setSelectedStatus] = useState<IssueStatus | null>(null);
+	const [selectedStatus, setSelectedStatus] = useState<IssueStatus | null>(
+		null
+	);
 
 	const {
 		loading: issuesLoading,
@@ -86,7 +90,7 @@ export default function SprintBoard({
 		fn: fetchIssues,
 		data: issues,
 		setData: setIssues,
-	} = useFetch(getIssuesForSprint);
+	} = useFetch<Issue[], [string]>(getIssuesForSprint);
 
 	// const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
 
@@ -197,8 +201,9 @@ export default function SprintBoard({
 	// 	await updateIssueOrderFn(merged);
 	// };
 	const onDragEnd = async (result: DropResult) => {
+		// const { source, destination } = result;
+		if (!issues) return;
 		const { source, destination } = result;
-
 		if (!destination) return;
 
 		// No movement
@@ -334,7 +339,7 @@ export default function SprintBoard({
 									<h3 className="font-semibold mb-2 text-center">
 										{column.name}
 									</h3>
-									{filteredIssues
+									{/* {filteredIssues
 										?.filter(
 											(issue: { status: string }) => issue.status === column.key
 										)
@@ -353,13 +358,55 @@ export default function SprintBoard({
 													>
 														<IssueCard
 															issue={issue}
+															// onDelete={() => fetchIssues(currentSprint.id)}
+															// onUpdate={(updated) =>
+															// 	setIssues((issues: { id: string }[]) =>
+															// 		issues.map((issue: { id: string }) => {
+															// 			if (issue.id === updated.id) return updated;
+															// 			return issue;
+															// 		})
+															// 	)
+															// }                                                                                           issue={issue}
 															onDelete={() => fetchIssues(currentSprint.id)}
 															onUpdate={(updated) =>
-																setIssues((issues: { id: string }[]) =>
-																	issues.map((issue: { id: string }) => {
-																		if (issue.id === updated.id) return updated;
-																		return issue;
-																	})
+																setIssues(
+																	(prev: IssueWithRelations[] | undefined) =>
+																		prev?.map((issue) =>
+																			issue.id === updated.id ? updated : issue
+																		) ?? prev
+																)
+															}
+														/>
+													</div>
+												)}
+											</Draggable>
+										))} */}
+									{filteredIssues
+										?.filter(
+											(issue: IssueWithRelations) => issue.status === column.key
+										)
+										.map((issue, index) => (
+											<Draggable
+												key={issue.id}
+												draggableId={String(issue.id)}
+												index={index}
+												isDragDisabled={updateIssuesLoading}
+											>
+												{(provided) => (
+													<div
+														ref={provided.innerRef}
+														{...provided.draggableProps}
+														{...provided.dragHandleProps}
+													>
+														<IssueCard
+															issue={issue}
+															onDelete={() => fetchIssues(currentSprint.id)}
+															onUpdate={(updated) =>
+																setIssues(
+																	(prev: IssueWithRelations[] | undefined) =>
+																		prev?.map((issue) =>
+																			issue.id === updated.id ? updated : issue
+																		) ?? prev
 																)
 															}
 														/>
@@ -373,7 +420,9 @@ export default function SprintBoard({
 											<Button
 												variant="ghost"
 												className="w-full"
-												onClick={() => handleAddIssue(column.key as IssueStatus)}
+												onClick={() =>
+													handleAddIssue(column.key as IssueStatus)
+												}
 											>
 												<Plus className="mr-2 h-4 w-4" />
 												Create Issue
@@ -392,9 +441,9 @@ export default function SprintBoard({
 				// sprintId={currentSprint.id}
 				// status={selectedStatus}
 				// projectId={projectId}
-                                sprintId={currentSprint.id}
-                                status={selectedStatus ?? "TODO"}
-                                projectId={projectId}
+				sprintId={currentSprint.id}
+				status={selectedStatus ?? "TODO"}
+				projectId={projectId}
 				onIssueCreated={handleIssueCreated}
 				orgId={orgId}
 			/>

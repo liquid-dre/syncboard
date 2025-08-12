@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/prisma";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import type { IssueWithRelations } from "@/lib/types/issues";
 
 // receives orgID from organization/page.tsx as input
 export async function getOrganization(slug: any) {
@@ -15,7 +16,7 @@ export async function getOrganization(slug: any) {
 	// 	where: { clerkUserId: userId },
 	// });
 
-	const user = await getOrCreateUser(userId); 
+	const user = await getOrCreateUser(userId);
 
 	if (!user) {
 		throw new Error("User not found");
@@ -91,7 +92,41 @@ export async function getProjects(orgId: any) {
 	return projects;
 }
 
-export async function getUserIssues(userId: any) {
+// export async function getUserIssues(userId: any) {
+// 	const { orgId } = await auth();
+
+// 	if (!userId || !orgId) {
+// 		throw new Error("No user id or organization id found");
+// 	}
+
+// 	const user = await db.user.findUnique({
+// 		where: { clerkUserId: userId },
+// 	});
+
+// 	if (!user) {
+// 		throw new Error("User not found");
+// 	}
+
+// 	const issues = await db.issue.findMany({
+// 		where: {
+// 			OR: [{ assigneeId: user.id }, { reporterId: user.id }],
+// 			project: {
+// 				organizationId: orgId,
+// 			},
+// 		},
+// 		include: {
+// 			project: true,
+// 			assignee: true,
+// 			reporter: true,
+// 		},
+// 		orderBy: { updatedAt: "desc" },
+// 	});
+
+// 	return issues;
+// }
+export async function getUserIssues(
+	userId: any
+): Promise<IssueWithRelations[]> {
 	const { orgId } = await auth();
 
 	if (!userId || !orgId) {
@@ -114,7 +149,7 @@ export async function getUserIssues(userId: any) {
 			},
 		},
 		include: {
-			project: true,
+			project: { select: { name: true } },
 			assignee: true,
 			reporter: true,
 		},

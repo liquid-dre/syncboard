@@ -13,7 +13,7 @@ import { formatDistanceToNow } from "@/node_modules/date-fns/formatDistanceToNow
 import IssueDetailsDialog from "./issue-details-dialog";
 import UserAvatar from "./user-avatar";
 import { useRouter } from "next/navigation";
-import { IssuePriority, IssueStatus } from "@/lib/generated/prisma";
+import { IssuePriority } from "@/lib/generated/prisma";
 import type { IssueWithRelations } from "@/lib/types/issues";
 
 
@@ -100,7 +100,6 @@ export default function IssueCard({
 				issue={currentIssue}
 				onDelete={onDeleteHandler}
 				onUpdate={onUpdateHandler}
-				borderCol={priorityColor[currentIssue.priority]}
 			/>
 		</>
 	);

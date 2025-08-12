@@ -2,25 +2,46 @@
 
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
+import type { IssueWithRelations } from "@/lib/types/issues";
 
-export async function getIssuesForSprint(sprintId: any) {
-	const { userId, orgId } = await auth();
+export async function getIssuesForSprint(sprintId: any): Promise<IssueWithRelations[]> {
+        const { userId, orgId } = await auth();
 
-	if (!userId || !orgId) {
-		throw new Error("Unauthorized");
-	}
+        if (!userId || !orgId) {
+                throw new Error("Unauthorized");
+        }
 
-	const issues = await db.issue.findMany({
-		where: { sprintId: sprintId },
-		orderBy: [{ status: "asc" }, { order: "asc" }],
-		include: {
-			assignee: true,
-			reporter: true,
-		},
-	});
+        const issues = await db.issue.findMany({
+                where: { sprintId: sprintId },
+                orderBy: [{ status: "asc" }, { order: "asc" }],
+                include: {
+                        project: { select: { name: true } },
+                        assignee: true,
+                        reporter: true,
+                },
+        });
 
-	return issues;
+        return issues;
 }
+
+// export async function getIssuesForSprint(sprintId: any) {
+// 	const { userId, orgId } = await auth();
+
+// 	if (!userId || !orgId) {
+// 		throw new Error("Unauthorized");
+// 	}
+
+// 	const issues = await db.issue.findMany({
+// 		where: { sprintId: sprintId },
+// 		orderBy: [{ status: "asc" }, { order: "asc" }],
+// 		include: {
+// 			assignee: true,
+// 			reporter: true,
+// 		},
+// 	});
+
+// 	return issues;
+// }
 
 export async function createIssue(
 	projectId: any,

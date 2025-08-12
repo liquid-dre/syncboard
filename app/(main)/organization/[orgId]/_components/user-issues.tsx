@@ -2,21 +2,7 @@ import { Suspense } from "react";
 import { getUserIssues } from "@/actions/organizations";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import IssueCard from "@/components/issue-card";
-import { IssueStatus } from "@/lib/generated/prisma";
-
-type IssueWithRelations = {
-	id: string;
-	title: string;
-	status: IssueStatus;
-	priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
-	createdAt: string;
-	description: string | null;
-	project: { name: string };
-	assignee: { clerkUserId: string; name: string; image?: string } | null;
-	reporter: { clerkUserId: string; name: string; imageUrl?: string };
-	projectId: string;
-	sprintId?: string | null;
-};
+import type { IssueWithRelations } from "@/lib/types/issues";
 
 export default async function UserIssues({ userId }: { userId: string }) {
 	const issues: IssueWithRelations[] = await getUserIssues(userId);
@@ -35,7 +21,7 @@ export default async function UserIssues({ userId }: { userId: string }) {
 		(issue) => issue.assignee?.clerkUserId === userId
 	);
 	const reportedIssues = issues.filter(
-		(issue) => issue.reporter.clerkUserId === userId
+		(issue) => issue.reporter?.clerkUserId === userId
 	);
 
 	return (
@@ -85,21 +71,37 @@ function groupIssuesByProject(issues: IssueWithRelations[]) {
 // function IssueGrid({ issues }: { issues: any[] }) {
 // 	const grouped = groupIssuesByProject(issues);
 function IssueGrid({ issues }: { issues: IssueWithRelations[] }) {
-	const grouped = groupIssuesByProject(issues);
-	type CardIssue = {
-		id: string;
-		title: string;
-		status: IssueStatus;
-		priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
-		createdAt: string;
-		project: { name: string };
-		assignee: { name: string; image?: string; clerkUserId: string };
-		description: string | null;
-		projectId: string;
-		reporter: { name: string; imageUrl?: string; clerkUserId: string };
-		sprintId?: string | null;
-	};
+	// const grouped = groupIssuesByProject(issues);
+	// type CardIssue = {
+	// 	id: string;
+	// 	title: string;
+	// 	status: IssueStatus;
+	// 	priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+	// 	createdAt: string;
+	// 	project: { name: string };
+	// 	assignee: { name: string; image?: string; clerkUserId: string };
+	// 	description: string | null;
+	// 	projectId: string;
+	// 	reporter: { name: string; imageUrl?: string; clerkUserId: string };
+	// 	sprintId?: string | null;
+	// };
 
+	// // return (
+	// // 	<div className="space-y-10">
+	// // 		{Object.entries(grouped).map(([projectName, projectIssues]) => (
+	// // 			<div key={projectName}>
+	// // 				<h2 className="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">
+	// // 					{projectName}
+	// // 				</h2>
+	// // 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+	// // 					{projectIssues.map((issue: any) => (
+	// // 						<IssueCard key={issue.id} issue={issue} showStatus />
+	// // 					))}
+	// // 				</div>
+	// // 			</div>
+	// // 		))}
+	// // 	</div>
+	// // );
 	// return (
 	// 	<div className="space-y-10">
 	// 		{Object.entries(grouped).map(([projectName, projectIssues]) => (
@@ -108,14 +110,34 @@ function IssueGrid({ issues }: { issues: IssueWithRelations[] }) {
 	// 					{projectName}
 	// 				</h2>
 	// 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-	// 					{projectIssues.map((issue: any) => (
-	// 						<IssueCard key={issue.id} issue={issue} showStatus />
-	// 					))}
+	// 					{projectIssues.map((issue) => {
+	// 						const cardIssue: CardIssue = {
+	// 							id: issue.id,
+	// 							title: issue.title,
+	// 							status: issue.status,
+	// 							priority: issue.priority,
+	// 							createdAt: issue.createdAt,
+	// 							project: issue.project,
+	// 							assignee: issue.assignee
+	// 								? {
+	// 										name: issue.assignee.name,
+	// 										image: issue.assignee.image,
+	// 										clerkUserId: issue.assignee.clerkUserId,
+	// 								  }
+	// 								: { name: "Unassigned", clerkUserId: "" },
+	// 							description: issue.description,
+	// 							projectId: issue.projectId,
+	// 							reporter: issue.reporter,
+	// 							sprintId: issue.sprintId,
+	// 						};
+	// 						return <IssueCard key={issue.id} issue={cardIssue} showStatus />;
+	// 					})}
 	// 				</div>
 	// 			</div>
 	// 		))}
 	// 	</div>
 	// );
+	const grouped = groupIssuesByProject(issues);
 	return (
 		<div className="space-y-10">
 			{Object.entries(grouped).map(([projectName, projectIssues]) => (
@@ -124,28 +146,9 @@ function IssueGrid({ issues }: { issues: IssueWithRelations[] }) {
 						{projectName}
 					</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-						{projectIssues.map((issue) => {
-							const cardIssue: CardIssue = {
-								id: issue.id,
-								title: issue.title,
-								status: issue.status,
-								priority: issue.priority,
-								createdAt: issue.createdAt,
-								project: issue.project,
-								assignee: issue.assignee
-									? {
-											name: issue.assignee.name,
-											image: issue.assignee.image,
-											clerkUserId: issue.assignee.clerkUserId,
-									  }
-									: { name: "Unassigned", clerkUserId: "" },
-								description: issue.description,
-								projectId: issue.projectId,
-								reporter: issue.reporter,
-								sprintId: issue.sprintId,
-							};
-							return <IssueCard key={issue.id} issue={cardIssue} showStatus />;
-						})}
+						{projectIssues.map((issue) => (
+							<IssueCard key={issue.id} issue={issue} showStatus />
+						))}
 					</div>
 				</div>
 			))}
