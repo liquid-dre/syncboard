@@ -9,11 +9,17 @@ import UserIssues from "./_components/user-issues";
 // 	params: { orgId: string };
 // };
 interface OrganizationPageProps {
+
   params: Promise<{ orgId: string }>;
 }
-export default async function OrganizationPage({ params }: OrganizationPageProps) {
-        const { orgId } = await params;
-        const { userId } = await auth();
+export default async function OrganizationPage({
+	params,
+}: OrganizationPageProps) {
+	// const { orgId } = params;
+	// const { userId } = await auth();
+
+	const { orgId } = await params;
+	const { userId } = await auth();
 
 	if (!userId) {
 		redirect("/sign-in");
