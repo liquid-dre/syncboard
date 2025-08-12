@@ -13,33 +13,18 @@ import { formatDistanceToNow } from "@/node_modules/date-fns/formatDistanceToNow
 import IssueDetailsDialog from "./issue-details-dialog";
 import UserAvatar from "./user-avatar";
 import { useRouter } from "next/navigation";
-import { IssueStatus } from "@/lib/generated/prisma";
+import { IssuePriority, IssueStatus } from "@/lib/generated/prisma";
+import type { IssueWithRelations } from "@/lib/types/issues";
 
-type Priority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
-
-interface Issue {
-	id: string;
-	title: string;
-	status: IssueStatus;
-	priority: Priority;
-	createdAt: string;
-	project: {
-		name: string;
-	};
-	assignee: {
-		name: string;
-		image?: string;
-	};
-}
 
 interface IssueCardProps {
-	issue: Issue;
+	issue: IssueWithRelations;
 	showStatus?: boolean;
-	onDelete?: (issue: Issue) => void;
-	onUpdate?: (issue: Issue) => void;
+	onDelete?: (issue: IssueWithRelations) => void;
+	onUpdate?: (issue: IssueWithRelations) => void;
 }
 
-const priorityColor: Record<Priority, string> = {
+const priorityColor: Record<IssuePriority, string> = {
 	LOW: "border-green-500",
 	MEDIUM: "border-yellow-400",
 	HIGH: "border-orange-500",
@@ -53,7 +38,7 @@ export default function IssueCard({
 	onUpdate = () => {},
 }: IssueCardProps) {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
-	const [currentIssue, setCurrentIssue] = useState(issue);
+	const [currentIssue, setCurrentIssue] = useState<IssueWithRelations>(issue);
 	const router = useRouter();
 
 	const onDeleteHandler = () => {
@@ -61,7 +46,7 @@ export default function IssueCard({
 		onDelete(currentIssue);
 	};
 
-	const onUpdateHandler = (updatedIssue: Issue) => {
+	const onUpdateHandler = (updatedIssue: IssueWithRelations) => {
 		setCurrentIssue(updatedIssue);
 		router.refresh();
 		onUpdate(updatedIssue);
