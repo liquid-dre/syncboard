@@ -30,6 +30,10 @@ type Sprint = {
 	endDate: string | Date;
 };
 
+const isIssueStatus = (status: string): status is IssueStatus => {
+	return (statuses as { key: IssueStatus }[]).some((s) => s.key === status);
+};
+
 // export interface Issue extends Omit<FilterIssue, "assignee" | "priority"> {
 // 	priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
 // 	assignee: { id: string; name: string; image?: string; clerkUserId: string };
@@ -230,7 +234,10 @@ export default function SprintBoard({
 
 		// Update status if moving to another column
 		if (source.droppableId !== destination.droppableId) {
-			movedIssue.status = destination.droppableId;
+			// movedIssue.status = destination.droppableId;
+			if (isIssueStatus(destination.droppableId)) {
+				movedIssue.status = destination.droppableId;
+			}
 		}
 
 		// Remove issue from its old position
