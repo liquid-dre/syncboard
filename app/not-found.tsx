@@ -11,6 +11,8 @@
 }
 */
 
+import Link from "next/link";
+
 export default function NotFound() {
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-black text-white overflow-hidden">
@@ -21,12 +23,12 @@ export default function NotFound() {
       <p className="text-3xl md:text-4xl font-light text-gray-300 mb-10 z-10 text-center max-w-lg px-4">
         Looks like this page took a detour to another dimension.
       </p>
-      <a
+      <Link
         href="/"
         className="relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 ease-in-out z-10"
       >
         Beam Me Up, Scotty! (Back Home)
-      </a>
+      </Link>
     </div>
   );
 }

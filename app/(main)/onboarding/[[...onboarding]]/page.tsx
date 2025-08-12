@@ -2,10 +2,9 @@
 
 import { OrganizationList } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React from "react";
 
 const Onboarding = () => {
-	const router = useRouter();
 
 	return (
 		<div className="flex justify-center items-center pt-14">

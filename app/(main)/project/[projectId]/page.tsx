@@ -2,19 +2,19 @@ import { getProject } from "@/actions/projects";
 import { notFound } from "next/navigation";
 import SprintCreationForm from "../_components/create-sprint";
 import SprintBoard from "../_components/sprint-board";
-import { useEffect, useState } from "react";
-import { fetchSprints } from "@/actions/sprints";
 
-export default async function ProjectPage({ params }: any) {
-	
-  const { projectId } = params;
+export default async function ProjectPage({
+	params,
+}: {
+	params: Promise<{ projectId: string }>;
+}) {
+	const { projectId } = await params;
 
-  const project = await getProject(projectId);
+	const project = await getProject(projectId);
 
 	if (!project) {
 		notFound();
 	}
-	
 
 	return (
 		<div className="container mx-auto">

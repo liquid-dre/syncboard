@@ -11,8 +11,6 @@ import { ArrowRight, BarChart, Calendar, Layout } from "lucide-react";
 import Link from "next/link";
 import faqs from "@/data/faqs.json";
 
-const COMPANY_PRIMARY_COLOR = "#4ECDC4";
-
 export default function Home() {
 	const features = [
 		{

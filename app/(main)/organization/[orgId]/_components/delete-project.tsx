@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Trash2, Loader2, Info, AlertTriangle } from "lucide-react"; // Added Info icon
+import { Trash2, Loader2, AlertTriangle } from "lucide-react"; // Added Info icon
 import { useOrganization } from "@clerk/nextjs";
 import { deleteProject } from "@/actions/projects";
 import { useRouter } from "next/navigation";

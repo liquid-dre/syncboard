@@ -9,7 +9,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import formatDistanceToNow from "date-fns/formatDistanceToNow";
+import {formatDistanceToNow} from "@/node_modules/date-fns/formatDistanceToNow";
 import IssueDetailsDialog from "./issue-details-dialog";
 import UserAvatar from "./user-avatar";
 import { useRouter } from "next/navigation";

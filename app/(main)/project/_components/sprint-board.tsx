@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BarLoader } from "react-spinners";
@@ -29,14 +28,6 @@ export interface Issue {
 	assignee: Assignee;
 	status: string;
 	order: number;
-}
-
-function reorder(list: any, startIndex: any, endIndex: any) {
-	const result = Array.from(list);
-	const [removed] = result.splice(startIndex, 1);
-	result.splice(endIndex, 0, removed);
-
-	return result;
 }
 
 export default function SprintBoard({ sprints, projectId, orgId }: any) {
