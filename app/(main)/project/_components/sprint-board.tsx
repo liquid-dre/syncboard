@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import {
+	useState,
+	useEffect,
+	useCallback,
+	Dispatch,
+	SetStateAction,
+} from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BarLoader } from "react-spinners";
@@ -79,8 +85,18 @@ export default function SprintBoard({
 	// const [currentSprint, setCurrentSprint] = useState(
 	// 	sprints.find((spr) => spr.status === "ACTIVE") || sprints[0]
 	// );
-	const [sprintList, setSprintList] = useState(initialSprints);
-	const [currentSprint, setCurrentSprint] = useState(
+	// const [sprintList, setSprintList] = useState(initialSprints);
+	// const [currentSprint, setCurrentSprint] = useState(
+	// 	initialSprints.find((spr) => spr.status === "ACTIVE") || initialSprints[0]
+	// );
+	const [sprintList, setSprintList]: [
+		Sprint[],
+		Dispatch<SetStateAction<Sprint[]>>
+	] = useState(initialSprints);
+	const [currentSprint, setCurrentSprint]: [
+		Sprint,
+		Dispatch<SetStateAction<Sprint>>
+	] = useState(
 		initialSprints.find((spr) => spr.status === "ACTIVE") || initialSprints[0]
 	);
 	// const [isDrawerOpen, setIsDrawerOpen] = useState(false);

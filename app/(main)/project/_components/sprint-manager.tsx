@@ -31,7 +31,7 @@ type Sprint = {
 
 interface SprintManagerProps {
 	sprint: Sprint;
-	setSprint: (s: Sprint) => void;
+	setSprint: Dispatch<SetStateAction<Sprint>>;
 	sprints: Sprint[];
 	setSprints: Dispatch<SetStateAction<Sprint[]>>;
 }
