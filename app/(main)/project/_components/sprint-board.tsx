@@ -72,14 +72,17 @@ interface SprintBoardProps {
 // 			sprints[0]
 // 	);
 export default function SprintBoard({
-	sprints,
+	sprints: initialSprints,
 	projectId,
 	orgId,
 }: SprintBoardProps) {
+	// const [currentSprint, setCurrentSprint] = useState(
+	// 	sprints.find((spr) => spr.status === "ACTIVE") || sprints[0]
+	// );
+	const [sprintList, setSprintList] = useState(initialSprints);
 	const [currentSprint, setCurrentSprint] = useState(
-		sprints.find((spr) => spr.status === "ACTIVE") || sprints[0]
+		initialSprints.find((spr) => spr.status === "ACTIVE") || initialSprints[0]
 	);
-
 	// const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 	// const [selectedStatus, setSelectedStatus] = useState(null);
 
@@ -312,7 +315,8 @@ export default function SprintBoard({
 			<SprintManager
 				sprint={currentSprint}
 				setSprint={setCurrentSprint}
-				sprints={sprints}
+				sprints={sprintList}
+				setSprints={setSprintList}
 			/>
 
 			{/* Issues */}

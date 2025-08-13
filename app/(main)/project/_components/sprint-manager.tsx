@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Select,
@@ -13,10 +13,12 @@ import { Badge } from "@/components/ui/badge";
 import { isAfter, isBefore, format } from "date-fns";
 import { formatDistanceToNow } from "@/node_modules/date-fns/formatDistanceToNow";
 import useFetch from "@/hooks/use-fetch";
-import { useSearchParams } from "next/navigation";
-import { updateSprintStatus } from "@/actions/sprints";
+// import { useSearchParams } from "next/navigation";
+// import { updateSprintStatus } from "@/actions/sprints";
+import { useRouter, useSearchParams } from "next/navigation";
+import { updateSprintStatus, deleteSprint } from "@/actions/sprints";
 import gsap from "gsap";
-import { CircleOff, Pause, Play, RotateCcw } from "lucide-react";
+import { CircleOff, Pause, Play, RotateCcw, Trash } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type Sprint = {
@@ -31,22 +33,34 @@ interface SprintManagerProps {
 	sprint: Sprint;
 	setSprint: (s: Sprint) => void;
 	sprints: Sprint[];
+	setSprints: Dispatch<SetStateAction<Sprint[]>>;
 }
 
 export default function SprintManager({
 	sprint,
 	setSprint,
 	sprints,
+	setSprints,
 }: SprintManagerProps) {
 	const [status, setStatus] = useState(sprint.status);
 	const searchParams = useSearchParams();
 	const sprintContainerRef = useRef<HTMLDivElement>(null);
 
+	// const {
+	// 	fn: updateStatus,
+	// 	loading,
+	// 	data: updatedStatus,
+	// } = useFetch(updateSprintStatus);
 	const {
 		fn: updateStatus,
-		loading,
+		loading: statusLoading,
 		data: updatedStatus,
 	} = useFetch(updateSprintStatus);
+
+	const { fn: removeSprint, loading: deleteLoading } = useFetch(deleteSprint);
+
+	const loading = statusLoading || deleteLoading;
+	const router = useRouter();
 
 	const startDate = new Date(sprint.startDate);
 	const endDate = new Date(sprint.endDate);
@@ -63,12 +77,22 @@ export default function SprintManager({
 		updateStatus(sprint.id, newStatus);
 	};
 
+	const handleDelete = async () => {
+		await removeSprint(sprint.id);
+		const updatedSprints = sprints.filter((s) => s.id !== sprint.id);
+		setSprints(updatedSprints);
+		if (updatedSprints.length > 0) {
+			setSprint(updatedSprints[0]);
+		}
+		router.refresh();
+	};
+
 	useEffect(() => {
 		if (updatedStatus?.success) {
 			setStatus(updatedStatus.sprint.status);
 			setSprint({ ...sprint, status: updatedStatus.sprint.status });
 		}
-        }, [updatedStatus, sprint, setSprint]);
+	}, [updatedStatus, sprint, setSprint]);
 
 	const getStatusText = () => {
 		if (status === "COMPLETED") {
@@ -225,7 +249,7 @@ export default function SprintManager({
 							</Button>
 						)}
 
-						{(canEnd || canEndFromHold) && (
+						{/* {(canEnd || canEndFromHold) && (
 							<Button
 								onClick={() => handleStatusChange("COMPLETED")}
 								disabled={loading}
@@ -234,7 +258,25 @@ export default function SprintManager({
 								<CircleOff className="w-4 h-4 mr-2" />
 								End Sprint
 							</Button>
+						)} */}
+						{(canEnd || canEndFromHold) && (
+							<Button
+								onClick={() => handleStatusChange("COMPLETED")}
+								disabled={loading}
+								className="bg-gradient-to-r from-[#C40B0B] to-[#9b0a0a] text-white font-medium rounded-md shadow hover:scale-[1.02] hover:shadow-lg transition"
+							>
+								<CircleOff className="w-4 h-4 mr-2" />
+								End Sprint
+							</Button>
 						)}
+						<Button
+							onClick={handleDelete}
+							disabled={loading}
+							className="bg-gradient-to-r from-red-600 to-red-700 text-white font-medium rounded-md shadow hover:scale-[1.02] hover:shadow-lg transition ml-auto"
+						>
+							<Trash className="w-4 h-4 mr-2" />
+							Delete Sprint
+						</Button>
 					</div>
 				</div>
 
