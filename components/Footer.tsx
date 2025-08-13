@@ -3,7 +3,7 @@ import { Github, Linkedin, Twitter } from "lucide-react";
 
 export default function Footer() {
 	return (
-		<footer className="bg-[#2C2C2C] text-gray-300 py-14 mt-16 rounded-t-3xl shadow-lg">
+		<footer className="bg-[#2C2C2C] text-gray-300 py-14 rounded-t-3xl shadow-lg">
 			<div className="container mx-auto px-6 grid grid-cols-1 sm:grid-cols-3 gap-12 text-sm sm:text-left text-center">
 				{/* Left */}
 				<div>
@@ -58,7 +58,7 @@ export default function Footer() {
 				<div>
 					<h3 className="text-lg font-semibold text-white mb-3">Connect</h3>
 					<div className="flex justify-center sm:justify-start gap-5 mt-2">
-						<Link href="https://github.com" target="_blank">
+						<Link href="https://github.com/liquid-dre/syncboard" target="_blank">
 							<Github className="w-6 h-6 hover:text-[#4ECDC4] transition-colors" />
 						</Link>
 						<Link href="https://linkedin.com" target="_blank">

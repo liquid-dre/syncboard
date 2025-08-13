@@ -112,7 +112,7 @@ export default function Home() {
 					<h3 className="text-4xl font-bold mb-16 text-center">
 						Frequently Asked Questions
 					</h3>
-					<Accordion
+					{/* <Accordion
 						type="single"
 						collapsible
 						className="w-full max-w-3xl mx-auto"
@@ -123,12 +123,28 @@ export default function Home() {
 								<AccordionContent>{faq.answer}</AccordionContent>
 							</AccordionItem>
 						))}
-					</Accordion>
+					</Accordion> */}
+					<div className="w-full max-w-3xl mx-auto">
+						<Accordion type="single" collapsible>
+							{faqs.map((faq, index) => (
+								<AccordionItem
+									key={index}
+									value={`item-${index}`}
+									className="mb-4 rounded-lg border border-white/10 bg-gray-900/50 shadow-sm px-8"
+								>
+									<AccordionTrigger className="text-lg font-medium transition-colors">
+										{faq.question}
+									</AccordionTrigger>
+									<AccordionContent>{faq.answer}</AccordionContent>
+								</AccordionItem>
+							))}
+						</Accordion>
+					</div>
 				</div>
 			</Section>
 
 			{/* CTA Section */}
-			<Section className="text-center bg-gradient-to-br from-black via-gray-950 to-black text-white">
+			<Section className="text-center bg-gradient-to-br from-black via-gray-950 to-black text-white pb-16 pt-16">
 				<div className="container mx-auto px-5">
 					<h3 className="text-4xl font-bold mb-6">
 						Ready to Transform Your Workflow?
