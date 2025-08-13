@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, BarChart, Calendar, Layout } from "lucide-react";
 import Link from "next/link";
 import faqs from "@/data/faqs.json";
+import Section from "@/components/section";
 
 export default function Home() {
 	const features = [
@@ -34,47 +35,51 @@ export default function Home() {
 	];
 
 	return (
-		<div className="min-h-screen">
+		<div>
 			{/* Hero Section */}
-			<section className="flex-col justify-center items-center  min-h-screen mx-auto py-24 text-center flex ">
-				<h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold gradient-title pb-6">
-					Streamline Your Workflow
-					<br />
-					<span className="bg-gradient-to-r from-pink-500 via-orange-400 to-yellow-300 text-transparent bg-clip-text">
-						with SyncBoard
-					</span>
-				</h1>
-				<p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-					Empower your team with our intuitive project management solution.
-				</p>
-				<div className="flex justify-center gap-4">
-					<Link href="/onboarding">
-						<Button
-							size="lg"
-							className="relative px-8 py-4 text-lg font-semibold rounded-xl bg-gradient-to-r from-pink-500 via-orange-400 to-yellow-300 text-white shadow-lg hover:shadow-[0_0_30px_rgba(255,115,179,0.8)] hover:scale-115 transition-all"
-						>
-							Get Started <ArrowRight size={18} className="ml-2" />
-						</Button>
-					</Link>
-					<Link href="#features">
-						<Button
-							size="lg"
-							variant="outline"
-							className="text-white border-white hover:bg-white hover:text-white hover:scale-115"
-						>
-							Learn More
-						</Button>
-					</Link>
+			{/* <section className="flex items-center min-h-screen py-24 text-center"> */}
+
+			<Section className="flex-col justify-center items-center  min-h-screen mx-auto text-center flex ">
+				<div className="container mx-auto px-5">
+					<h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold gradient-title pb-6">
+						Streamline Your Workflow
+						<br />
+						<span className="bg-gradient-to-r from-pink-500 via-orange-400 to-yellow-300 text-transparent bg-clip-text">
+							with SyncBoard
+						</span>
+					</h1>
+					<p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
+						Empower your team with our intuitive project management solution.
+					</p>
+					<div className="flex justify-center gap-4">
+						<Link href="/onboarding">
+							<Button
+								size="lg"
+								className="relative px-8 py-4 text-lg font-semibold rounded-xl bg-gradient-to-r from-pink-500 via-orange-400 to-yellow-300 text-white shadow-lg hover:shadow-[0_0_30px_rgba(255,115,179,0.8)] hover:scale-115 transition-all"
+							>
+								Get Started <ArrowRight size={18} className="ml-2" />
+							</Button>
+						</Link>
+						<Link href="#features">
+							<Button
+								size="lg"
+								variant="outline"
+								className="text-white border-white hover:bg-white hover:text-white hover:scale-115"
+							>
+								Learn More
+							</Button>
+						</Link>
+					</div>
 				</div>
-			</section>
+			</Section>
 
 			{/* Features Section */}
-			<section id="features" className="bg-gray-950 py-24 px-5">
+			<Section id="features" className="bg-gray-950">
 				<div className="container mx-auto">
 					<h3 className="text-4xl font-bold mb-16 text-center text-white">
 						Key Features
 					</h3>
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+					<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-10">
 						{features.map((feature, index) => (
 							<Card
 								key={index}
@@ -89,20 +94,20 @@ export default function Home() {
 						))}
 					</div>
 				</div>
-			</section>
+			</Section>
 
 			{/* Companies Carousel */}
-			<section className="py-24 bg-black text-white">
+			<Section className="bg-black text-white">
 				<div className="container mx-auto">
 					<h3 className="text-4xl font-bold mb-16 text-center">
 						Trusted by Industry Leaders
 					</h3>
 					<CompanyCarousel />
 				</div>
-			</section>
+			</Section>
 
 			{/* FAQ Section */}
-			<section className="bg-gray-950 py-24 px-5 text-white">
+			<Section className="bg-gray-950 text-white">
 				<div className="container mx-auto">
 					<h3 className="text-4xl font-bold mb-16 text-center">
 						Frequently Asked Questions
@@ -120,11 +125,11 @@ export default function Home() {
 						))}
 					</Accordion>
 				</div>
-			</section>
+			</Section>
 
 			{/* CTA Section */}
-			<section className="py-24 text-center bg-gradient-to-br from-black via-gray-950 to-black text-white px-5">
-				<div className="container mx-auto">
+			<Section className="text-center bg-gradient-to-br from-black via-gray-950 to-black text-white">
+				<div className="container mx-auto px-5">
 					<h3 className="text-4xl font-bold mb-6">
 						Ready to Transform Your Workflow?
 					</h3>
@@ -141,7 +146,7 @@ export default function Home() {
 						</Button>
 					</Link>
 				</div>
-			</section>
+			</Section>
 		</div>
 	);
 }
