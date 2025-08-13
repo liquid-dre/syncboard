@@ -87,12 +87,18 @@ export default function SprintManager({
 		router.refresh();
 	};
 
+	// useEffect(() => {
+	// 	if (updatedStatus?.success) {
+	// 		setStatus(updatedStatus.sprint.status);
+	// 		setSprint({ ...sprint, status: updatedStatus.sprint.status });
+	// 	}
+	// }, [updatedStatus, sprint, setSprint]);
 	useEffect(() => {
 		if (updatedStatus?.success) {
 			setStatus(updatedStatus.sprint.status);
-			setSprint({ ...sprint, status: updatedStatus.sprint.status });
+			setSprint((prev) => ({ ...prev, status: updatedStatus.sprint.status }));
 		}
-	}, [updatedStatus, sprint, setSprint]);
+	}, [updatedStatus, setSprint]);
 
 	const getStatusText = () => {
 		if (status === "COMPLETED") {
