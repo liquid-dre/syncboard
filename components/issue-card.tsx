@@ -16,7 +16,6 @@ import { useRouter } from "next/navigation";
 import { IssuePriority } from "@/lib/generated/prisma";
 import type { IssueWithRelations } from "@/lib/types/issues";
 
-
 interface IssueCardProps {
 	issue: IssueWithRelations;
 	showStatus?: boolean;
@@ -62,17 +61,14 @@ export default function IssueCard({
 				className={`cursor-pointer border-l-4 ${
 					priorityColor[currentIssue.priority]
 				} 
-        hover:shadow-lg hover:scale-[1.02] transition-all duration-200 
-        bg-slate-800/40 backdrop-blur-sm`}
+    hover:shadow-lg hover:scale-[1.02] transition-all duration-200 
+    bg-slate-800/40 backdrop-blur-sm`}
 				onClick={() => setIsDialogOpen(true)}
 			>
-				<CardHeader className="pb-2">
-					<CardTitle className="text-sm font-semibold text-white line-clamp-2">
+				<CardHeader className="flex flex-row items-start justify-between pb-2">
+					<CardTitle className="text-sm font-semibold text-white line-clamp-2 pr-2">
 						{currentIssue.title}
 					</CardTitle>
-				</CardHeader>
-
-				<CardContent className="flex flex-wrap items-center gap-2 text-xs pb-2">
 					{showStatus && (
 						<Badge variant="secondary" className="text-[10px]">
 							{currentIssue.status}
@@ -80,13 +76,13 @@ export default function IssueCard({
 					)}
 					<Badge
 						variant="outline"
-						className={`text-[10px] border ${
+						className={`flex-shrink-0 text-[10px] border ${
 							priorityColor[currentIssue.priority]
 						} text-white`}
 					>
 						{currentIssue.priority}
 					</Badge>
-				</CardContent>
+				</CardHeader>
 
 				<CardFooter className="flex items-center justify-between text-[11px] text-gray-400">
 					<UserAvatar user={currentIssue.assignee} />
