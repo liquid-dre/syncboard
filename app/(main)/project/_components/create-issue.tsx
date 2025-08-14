@@ -56,8 +56,8 @@ export default function IssueCreationDrawer({
   const {
     loading: createIssueLoading,
     fn: createIssueFn,
-    error,
     data: newIssue,
+    setData,
   } = useFetch(createIssue);
 
   const {
@@ -111,14 +111,10 @@ export default function IssueCreationDrawer({
       onClose();
       onIssueCreated();
       toast.success("Issue added successfully");
+      setData(undefined);
     }
-  }, [newIssue, createIssueLoading, onClose, onIssueCreated, reset]);
+  }, [newIssue, reset, setData]);
 
-  useEffect(() => {
-    if (error) {
-      toast.error(error.message || "Something went wrong");
-    }
-  }, [error]);
 
   return (
     <Drawer open={isOpen} onClose={onClose}>
@@ -229,10 +225,7 @@ export default function IssueCreationDrawer({
               />
             </div>
 
-            {/* Error */}
-            {error && (
-              <p className="text-red-500 text-sm mt-2">{error.message}</p>
-            )}
+            
           </form>
         </div>
 

@@ -108,8 +108,8 @@ export default function BoardFilters({
 								key={assignee.id}
 								className={`rounded-full ring-2 transition-all duration-200 cursor-pointer ${
 									selected
-										? "ring-blue-500 shadow-md"
-										: "ring-gray-300 hover:ring-blue-400"
+										? "ring-orange-500 shadow-md border-s border-orange-400"
+										: "ring-gray-300 hover:ring-orange-300"
 								}`}
 								style={{ zIndex: assignees.length - i }}
 								onClick={() => toggleAssignee(assignee.id)}
