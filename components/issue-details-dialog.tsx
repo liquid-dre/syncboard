@@ -27,6 +27,7 @@ import statuses from "@/data/status.json";
 import { deleteIssue, updateIssue } from "@/actions/issues";
 import { IssueStatus, IssuePriority } from "@/lib/generated/prisma";
 import type { IssueWithRelations } from "@/lib/types/issues";
+import IssueEditDrawer from "./issue-edit-drawer";
 
 type IssueDetailsDialogProps = {
 	isOpen: boolean;
@@ -48,9 +49,11 @@ export default function IssueDetailsDialog({
 	const [status, setStatus] = useState<IssueStatus>(issue.status);
 	const [priority, setPriority] = useState<IssuePriority>(issue.priority);
 	const { user } = useUser();
-	const { membership } = useOrganization();
+	const { membership, organization } = useOrganization();
 	const router = useRouter();
 	const pathname = usePathname();
+
+	const [isEditOpen, setIsEditOpen] = useState(false);
 
 	const {
 		loading: deleteLoading,
@@ -92,8 +95,14 @@ export default function IssueDetailsDialog({
 		}
 	}, [deleted, updated, onClose, onDelete, onUpdate]);
 
+	useEffect(() => {
+		setStatus(issue.status);
+		setPriority(issue.priority);
+	}, [issue]);
+
 	const canChange =
-		user?.id === issue.reporter?.clerkUserId || membership?.role === "org:admin";
+		user?.id === issue.reporter?.clerkUserId ||
+		membership?.role === "org:admin";
 
 	const handleGoToProject = () => {
 		router.push(`/project/${issue.projectId}?sprint=${issue.sprintId ?? ""}`);
@@ -132,123 +141,145 @@ export default function IssueDetailsDialog({
 	};
 
 	return (
-		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className="max-w-2xl rounded-xl p-6 shadow-lg transition-all duration-300">
-				<DialogHeader className="pb-3 border-b border-muted/20">
-					<div className="flex justify-between items-center">
-						<DialogTitle className="text-2xl font-semibold">
-							{issue.title}
-						</DialogTitle>
-						{isProjectPage && (
-							<Button
-								variant="ghost"
-								size="icon"
-								onClick={handleGoToProject}
-								title="Go to Project"
-								className="hover:bg-muted rounded-full transition"
+		<>
+			<Dialog open={isOpen} onOpenChange={onClose}>
+				<DialogContent className="max-w-2xl rounded-xl p-6 shadow-lg transition-all duration-300">
+					<DialogHeader className="pb-3 border-b border-muted/20">
+						<div className="flex justify-between items-center">
+							<DialogTitle className="text-2xl font-semibold">
+								{issue.title}
+							</DialogTitle>
+							{isProjectPage && (
+								<Button
+									variant="ghost"
+									size="icon"
+									onClick={handleGoToProject}
+									title="Go to Project"
+									className="hover:bg-muted rounded-full transition"
+								>
+									<ExternalLink className="h-5 w-5" />
+								</Button>
+							)}
+						</div>
+					</DialogHeader>
+
+					{(updateLoading || deleteLoading) && (
+						<div className="my-2">
+							<BarLoader width="100%" color="#36d7b7" />
+						</div>
+					)}
+
+					<div className="space-y-6 mt-4">
+						{/* Status & Priority */}
+						<div className="flex items-center gap-4">
+							<Select
+								value={status}
+								onValueChange={(v) => handleStatusChange(v as IssueStatus)}
 							>
-								<ExternalLink className="h-5 w-5" />
-							</Button>
+								<SelectTrigger
+									className={`min-w-[140px] border rounded-lg shadow-sm focus:ring-2 focus:ring-primary transition ${getStatusClass(
+										status
+									)}`}
+								>
+									<SelectValue placeholder="Status" />
+								</SelectTrigger>
+								<SelectContent>
+									{(statuses as { key: IssueStatus; name: string }[]).map(
+										(option) => (
+											<SelectItem key={option.key} value={option.key}>
+												{option.name}
+											</SelectItem>
+										)
+									)}
+								</SelectContent>
+							</Select>
+
+							<Select
+								value={priority}
+								onValueChange={(v) => handlePriorityChange(v as IssuePriority)}
+								disabled={!canChange}
+							>
+								<SelectTrigger
+									className={`min-w-[140px] border rounded-lg shadow-sm focus:ring-2 focus:ring-primary transition ${getPriorityClass(
+										priority
+									)}`}
+								>
+									<SelectValue placeholder="Priority" />
+								</SelectTrigger>
+								<SelectContent>
+									{priorityOptions.map((option) => (
+										<SelectItem key={option} value={option}>
+											{option}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+
+						{/* Description */}
+						<div>
+							<h4 className="font-semibold mb-2">Description</h4>
+							<div className="bg-muted/20 rounded-md p-3 text-sm shadow-inner">
+								<MDEditor.Markdown
+									className="prose max-w-none"
+									source={issue.description || "--"}
+								/>
+							</div>
+						</div>
+
+						{/* Assignee & Reporter */}
+						<div className="flex justify-between gap-8">
+							<div className="flex flex-col gap-2">
+								<h4 className="font-semibold text-sm">Assignee</h4>
+								<UserAvatar user={issue.assignee ?? null} />
+							</div>
+							<div className="flex flex-col gap-2">
+								<h4 className="font-semibold text-sm">Reporter</h4>
+								<UserAvatar user={issue.reporter} />
+							</div>
+						</div>
+
+						{/* Delete Button & Edit Buttons */}
+						{canChange && (
+							<>
+								<Button
+									onClick={() => setIsEditOpen(true)}
+									className="w-full mt-2 transition hover:opacity-90"
+								>
+									Edit Issue
+								</Button>
+								<Button
+									onClick={handleDelete}
+									disabled={deleteLoading}
+									variant="destructive"
+									className="w-full mt-2 transition hover:opacity-90"
+								>
+									{deleteLoading ? "Deleting..." : "Delete Issue"}
+								</Button>
+							</>
+						)}
+
+						{/* Error Messages */}
+						{(deleteError || updateError) && (
+							<p className="text-red-600 text-sm font-medium">
+								{deleteError?.message || updateError?.message}
+							</p>
 						)}
 					</div>
-				</DialogHeader>
-
-				{(updateLoading || deleteLoading) && (
-					<div className="my-2">
-						<BarLoader width="100%" color="#36d7b7" />
-					</div>
-				)}
-
-				<div className="space-y-6 mt-4">
-					{/* Status & Priority */}
-					<div className="flex items-center gap-4">
-						<Select
-							value={status}
-							onValueChange={(v) => handleStatusChange(v as IssueStatus)}
-						>
-							<SelectTrigger
-								className={`min-w-[140px] border rounded-lg shadow-sm focus:ring-2 focus:ring-primary transition ${getStatusClass(
-									status
-								)}`}
-							>
-								<SelectValue placeholder="Status" />
-							</SelectTrigger>
-							<SelectContent>
-								{(statuses as { key: IssueStatus; name: string }[]).map(
-									(option) => (
-										<SelectItem key={option.key} value={option.key}>
-											{option.name}
-										</SelectItem>
-									)
-								)}
-							</SelectContent>
-						</Select>
-
-						<Select
-							value={priority}
-							onValueChange={(v) => handlePriorityChange(v as IssuePriority)}
-							disabled={!canChange}
-						>
-							<SelectTrigger
-								className={`min-w-[140px] border rounded-lg shadow-sm focus:ring-2 focus:ring-primary transition ${getPriorityClass(
-									priority
-								)}`}
-							>
-								<SelectValue placeholder="Priority" />
-							</SelectTrigger>
-							<SelectContent>
-								{priorityOptions.map((option) => (
-									<SelectItem key={option} value={option}>
-										{option}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					</div>
-
-					{/* Description */}
-					<div>
-						<h4 className="font-semibold mb-2">Description</h4>
-						<div className="bg-muted/20 rounded-md p-3 text-sm shadow-inner">
-							<MDEditor.Markdown
-								className="prose max-w-none"
-								source={issue.description || "--"}
-							/>
-						</div>
-					</div>
-
-					{/* Assignee & Reporter */}
-					<div className="flex justify-between gap-8">
-						<div className="flex flex-col gap-2">
-							<h4 className="font-semibold text-sm">Assignee</h4>
-							<UserAvatar user={issue.assignee ?? null} />
-						</div>
-						<div className="flex flex-col gap-2">
-							<h4 className="font-semibold text-sm">Reporter</h4>
-							<UserAvatar user={issue.reporter} />
-						</div>
-					</div>
-
-					{/* Delete Button */}
-					{canChange && (
-						<Button
-							onClick={handleDelete}
-							disabled={deleteLoading}
-							variant="destructive"
-							className="w-full mt-2 transition hover:opacity-90"
-						>
-							{deleteLoading ? "Deleting..." : "Delete Issue"}
-						</Button>
-					)}
-
-					{/* Error Messages */}
-					{(deleteError || updateError) && (
-						<p className="text-red-600 text-sm font-medium">
-							{deleteError?.message || updateError?.message}
-						</p>
-					)}
-				</div>
-			</DialogContent>
-		</Dialog>
+				</DialogContent>
+			</Dialog>
+			<IssueEditDrawer
+				isOpen={isEditOpen}
+				onClose={() => setIsEditOpen(false)}
+				issue={issue}
+				orgId={organization?.id ?? ""}
+				onUpdated={(updatedIssue) => {
+					setStatus(updatedIssue.status);
+					setPriority(updatedIssue.priority);
+					onUpdate(updatedIssue);
+					setIsEditOpen(false);
+				}}
+			/>
+		</>
 	);
 }

@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDistanceToNow } from "@/node_modules/date-fns/formatDistanceToNow";
 import IssueDetailsDialog from "./issue-details-dialog";
 import UserAvatar from "./user-avatar";
@@ -45,8 +39,16 @@ export default function IssueCard({
 		onDelete(currentIssue);
 	};
 
+	// const onUpdateHandler = (updatedIssue: IssueWithRelations) => {
+	// 	setCurrentIssue(updatedIssue);
+	// 	router.refresh();
+	// 	onUpdate(updatedIssue);
+	// };
 	const onUpdateHandler = (updatedIssue: IssueWithRelations) => {
-		setCurrentIssue(updatedIssue);
+		setCurrentIssue((prev) => ({
+			...prev,
+			...updatedIssue,
+		}));
 		router.refresh();
 		onUpdate(updatedIssue);
 	};
