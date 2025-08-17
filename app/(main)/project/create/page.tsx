@@ -12,7 +12,6 @@ import useFetch from "@/hooks/use-fetch";
 import { projectSchema } from "@/app/lib/validators";
 import { createProject } from "@/actions/projects";
 import { BarLoader } from "react-spinners";
-import OrgSwitcher from "@/components/org-switcher";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -78,7 +77,11 @@ export default function CreateProjectPage() {
 				<span className="text-2xl gradient-title">
 					Oops! Only Admins can create projects.
 				</span>
-				<OrgSwitcher />
+
+				<span className="text-sm text-muted-foreground">
+					Use the organization switcher in the navbar to select a different
+					organization.
+				</span>
 			</div>
 		);
 	}
