@@ -153,17 +153,28 @@ export default function SprintManager({
 		return null;
 	};
 
-	useEffect(() => {
-		const sprintId = searchParams.get("sprint");
-		if (!sprintId || String(sprint.id) === sprintId) return;
+	// useEffect(() => {
+	// 	const sprintId = searchParams.get("sprint");
+	// 	if (!sprintId || String(sprint.id) === sprintId) return;
 
+	// 	const selectedSprint = sprints.find((s) => String(s.id) === sprintId);
+	// 	if (selectedSprint) {
+	// 		animateSprintChange();
+	// 		setSprint(selectedSprint);
+	// 		setStatus(selectedSprint.status);
+	// 	}
+	// }, [searchParams, sprints, sprint.id, setSprint]);
+
+	const sprintId = searchParams.get("sprint");
+	useEffect(() => {
+		if (!sprintId || String(sprint.id) === sprintId) return;
 		const selectedSprint = sprints.find((s) => String(s.id) === sprintId);
 		if (selectedSprint) {
 			animateSprintChange();
 			setSprint(selectedSprint);
 			setStatus(selectedSprint.status);
 		}
-	}, [searchParams, sprints, sprint.id, setSprint]);
+	}, [sprintId, sprints, sprint.id, setSprint]);
 
 	const handleSprintChange = (value: string) => {
 		if (String(sprint.id) === value) return;

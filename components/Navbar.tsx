@@ -8,6 +8,7 @@ import { PenBox } from "lucide-react";
 import UserMenu from "./user-menu";
 import UserLoading from "./user-loading";
 import gsap from "gsap";
+import OrgSwitcher from "./org-switcher";
 
 export default function Navbar() {
 	const [bubbles, setBubbles] = useState<{ top: string; left: string }[]>([]);
@@ -54,27 +55,6 @@ export default function Navbar() {
 
 					<div className="flex items-center gap-4 relative">
 						{/* Create Project Button with animated bubbles */}
-						<Link href="/project/create" passHref>
-							<Button
-								id="create-project-btn"
-								className="relative overflow-hidden flex items-center gap-2 px-6 py-3 rounded-xl font-semibold
-                bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 text-white 
-                shadow-lg hover:shadow-[0_0_35px_rgba(255,180,50,0.9)]
-                hover:scale-110 transition-all duration-300 group"
-							>
-								<PenBox size={16} />
-								<span className="hidden md:inline">Create Project</span>
-
-								{bubbles.map((bubble, i) => (
-									<span
-										key={i}
-										className="bubble absolute w-2 h-2 rounded-full bg-white opacity-30 blur-sm 
-                      group-hover:opacity-70 transition-opacity duration-300"
-										style={{ top: bubble.top, left: bubble.left }}
-									/>
-								))}
-							</Button>
-						</Link>
 
 						<SignedOut>
 							<SignInButton forceRedirectUrl="/onboarding">
@@ -83,6 +63,28 @@ export default function Navbar() {
 						</SignedOut>
 
 						<SignedIn>
+							<Link href="/project/create" passHref>
+								<Button
+									id="create-project-btn"
+									className="relative overflow-hidden flex items-center gap-2 px-6 py-3 rounded-xl font-semibold
+                bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 text-white 
+                shadow-lg hover:shadow-[0_0_35px_rgba(255,180,50,0.9)]
+                hover:scale-110 transition-all duration-300 group"
+								>
+									<PenBox size={16} />
+									<span className="hidden md:inline">Create Project</span>
+
+									{bubbles.map((bubble, i) => (
+										<span
+											key={i}
+											className="bubble absolute w-2 h-2 rounded-full bg-white opacity-30 blur-sm 
+                      group-hover:opacity-70 transition-opacity duration-300"
+											style={{ top: bubble.top, left: bubble.left }}
+										/>
+									))}
+								</Button>
+							</Link>
+							<OrgSwitcher />
 							<UserMenu />
 						</SignedIn>
 					</div>
