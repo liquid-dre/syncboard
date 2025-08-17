@@ -63,8 +63,7 @@ export default function Home() {
 						<Link href="#features">
 							<Button
 								size="lg"
-								variant="outline"
-								className="text-white border-white hover:bg-white hover:text-white hover:scale-115"
+								className="bg-transaparent text-white border border-gray-300 hover:bg-white hover:text-black hover:scale-115"
 							>
 								Learn More
 							</Button>

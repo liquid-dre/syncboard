@@ -206,12 +206,12 @@ export default function SprintManager({
 	return (
 		<div
 			ref={sprintContainerRef}
-			className="flex flex-col gap-4 p-5 border rounded-xl bg-card shadow-md hover:shadow-lg transition-shadow"
+			className="bg-[oklch(0.205_0_0)] flex flex-col gap-4 p-5 border rounded-xl shadow-md hover:shadow-lg transition-shadow"
 		>
 			<div className="relative">
 				{/* Main Content */}
 				<div
-					className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-opacity duration-300 ${
+					className={`bg-transparent flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-opacity duration-300 ${
 						loading ? "opacity-50 pointer-events-none" : ""
 					}`}
 				>

@@ -39,7 +39,7 @@ export default function Navbar() {
 	}, [bubbles]);
 
 	return (
-		<header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40">
+		<header className="sticky top-0 z-50 bg-black backdrop-blur-md border-b border-border/40">
 			<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 				<nav className="flex h-16 items-center justify-between">
 					{/* Animated Brand Title */}
