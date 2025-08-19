@@ -123,36 +123,43 @@ export async function deleteProject(projectId: any) {
 	return { success: true };
 }
 
+type StatusGroup = { status: string; _count: { _all: number } };
+type StatusCount = { status: string; count: number };
+
 export async function getProjectMetrics(projectId: any) {
-        const { userId, orgId } = await auth();
+	const { userId, orgId } = await auth();
 
-        if (!userId || !orgId) {
-                throw new Error("Unauthorized");
-        }
+	if (!userId || !orgId) {
+		throw new Error("Unauthorized");
+	}
 
-        const project = await db.project.findUnique({
-                where: { id: projectId },
-                select: { organizationId: true },
-        });
+	const project = await db.project.findUnique({
+		where: { id: projectId },
+		select: { organizationId: true },
+	});
 
-        if (!project || project.organizationId !== orgId) {
-                throw new Error("Project not found");
-        }
+	if (!project || project.organizationId !== orgId) {
+		throw new Error("Project not found");
+	}
 
-        const groups = await db.issue.groupBy({
-                by: ["status"],
-                where: { projectId },
-                _count: { _all: true },
-        });
+	const groups: StatusGroup[] = await db.issue.groupBy({
+		by: ["status"],
+		where: { projectId },
+		_count: { _all: true },
+	});
 
-        const statusCounts = groups.map((g) => ({
-                status: g.status,
-                count: g._count._all,
-        }));
+	const statusCounts = groups.map((g) => ({
+		status: g.status,
+		count: g._count._all,
+	}));
 
-        const total = statusCounts.reduce((sum, cur) => sum + cur.count, 0);
-        const done = statusCounts.find((s) => s.status === "DONE")?.count ?? 0;
-        const percentageCompleted = total > 0 ? Math.round((done / total) * 100) : 0;
+	const total = statusCounts.reduce(
+		(sum: number, cur: StatusCount) => sum + cur.count,
+		0
+	);
+	const done =
+		statusCounts.find((s: StatusCount) => s.status === "DONE")?.count ?? 0;
+	const percentageCompleted = total > 0 ? Math.round((done / total) * 100) : 0;
 
-        return { statusCounts, percentageCompleted };
+	return { statusCounts, percentageCompleted };
 }

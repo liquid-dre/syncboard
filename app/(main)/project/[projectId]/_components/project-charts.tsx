@@ -1,130 +1,122 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
 import {
-        Card,
-        CardContent,
-        CardHeader,
-        CardTitle,
-} from "@/components/ui/card";
+	Bar,
+	BarChart,
+	CartesianGrid,
+	Cell,
+	Pie,
+	PieChart,
+	ResponsiveContainer,
+	XAxis,
+	YAxis,
+} from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	ChartContainer,
+	ChartTooltip,
+	ChartTooltipContent,
+} from "@/components/ui/chart";
 import { getProjectMetrics } from "@/actions/projects";
 
-const ResponsiveContainer = dynamic(
-        () => import("recharts").then((m) => m.ResponsiveContainer),
-        { ssr: false }
-);
-const BarChart = dynamic(
-        () => import("recharts").then((m) => m.BarChart),
-        { ssr: false }
-);
-const Bar = dynamic(
-        () => import("recharts").then((m) => m.Bar),
-        { ssr: false }
-);
-const XAxis = dynamic(
-        () => import("recharts").then((m) => m.XAxis),
-        { ssr: false }
-);
-const YAxis = dynamic(
-        () => import("recharts").then((m) => m.YAxis),
-        { ssr: false }
-);
-const Tooltip = dynamic(
-        () => import("recharts").then((m) => m.Tooltip),
-        { ssr: false }
-);
-const PieChart = dynamic(
-        () => import("recharts").then((m) => m.PieChart),
-        { ssr: false }
-);
-const Pie = dynamic(
-        () => import("recharts").then((m) => m.Pie),
-        { ssr: false }
-);
-const Cell = dynamic(
-        () => import("recharts").then((m) => m.Cell),
-        { ssr: false }
-);
-
-const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042"];
+const STATUS_COLORS = [
+	"hsl(300, 1%, 96%)",
+	"hsl(202, 79%, 56%)",
+	"hsl(45, 93.6%, 46.5%)",
+	"hsl(116, 62%, 41%)",
+];
 
 interface ProjectChartsProps {
-        projectId: string;
+	projectId: string;
 }
 
 export default function ProjectCharts({ projectId }: ProjectChartsProps) {
-        const [data, setData] = useState<{
-                statusCounts: { status: string; count: number }[];
-                percentageCompleted: number;
-        } | null>(null);
+	const [data, setData] = useState<{
+		statusCounts: { status: string; count: number }[];
+		percentageCompleted: number;
+	} | null>(null);
 
-        useEffect(() => {
-                getProjectMetrics(projectId).then((metrics) => {
-                        setData(metrics);
-                });
-        }, [projectId]);
+	useEffect(() => {
+		getProjectMetrics(projectId).then((metrics) => {
+			setData(metrics);
+		});
+	}, [projectId]);
 
-        if (!data) return null;
+	if (!data) return null;
 
-        const progressData = [
-                { name: "Completed", value: data.percentageCompleted },
-                { name: "Remaining", value: 100 - data.percentageCompleted },
-        ];
+	const progressData = [
+		{ label: "Completed", value: data.percentageCompleted },
+		{ label: "Remaining", value: 100 - data.percentageCompleted },
+	];
 
-        return (
-                <div className="grid gap-4 md:grid-cols-2">
-                        <Card>
-                                <CardHeader>
-                                        <CardTitle>Issues by Status</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                        <ResponsiveContainer width="100%" height={300}>
-                                                <BarChart data={data.statusCounts}>
-                                                        <XAxis dataKey="status" />
-                                                        <YAxis allowDecimals={false} />
-                                                        <Tooltip />
-                                                        <Bar dataKey="count">
-                                                                {data.statusCounts.map((entry, index) => (
-                                                                        <Cell
-                                                                                key={`cell-${index}`}
-                                                                                fill={
-                                                                                        COLORS[
-                                                                                                index %
-                                                                                                COLORS.length
-                                                                                        ]
-                                                                                }
-                                                                        />
-                                                                ))}
-                                                        </Bar>
-                                                </BarChart>
-                                        </ResponsiveContainer>
-                                </CardContent>
-                        </Card>
+	const barConfig = {
+		count: {
+			label: "Issues",
+			color: "hsl(var(--chart-1))",
+		},
+	} as const;
 
-                        <Card>
-                                <CardHeader>
-                                        <CardTitle>Completion</CardTitle>
-                                </CardHeader>
-                                <CardContent className="flex justify-center">
-                                        <ResponsiveContainer width={200} height={200}>
-                                                <PieChart>
-                                                        <Pie
-                                                                data={progressData}
-                                                                dataKey="value"
-                                                                innerRadius={60}
-                                                                outerRadius={80}
-                                                                startAngle={90}
-                                                                endAngle={-270}
-                                                        >
-                                                                <Cell fill="#82ca9d" />
-                                                                <Cell fill="#d3d3d3" />
-                                                        </Pie>
-                                                        <Tooltip />
-                                                </PieChart>
-                                        </ResponsiveContainer>
-                                </CardContent>
-                        </Card>
-                </div>
-        );
+	const pieConfig = {
+		value: {
+			label: "Progress",
+			color: "hsl(var(--chart-1))",
+		},
+	} as const;
+
+	return (
+		<div className="grid gap-4 md:grid-cols-2">
+			<Card>
+				<CardHeader>
+					<CardTitle>Issues by Status</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<ChartContainer config={barConfig} className="h-72">
+						<ResponsiveContainer width="100%" height="100%">
+							<BarChart data={data.statusCounts}>
+								<CartesianGrid vertical={false} />
+								<XAxis dataKey="status" tickLine={false} axisLine={false} />
+								<YAxis allowDecimals={false} />
+								<ChartTooltip content={<ChartTooltipContent />} />
+								<Bar dataKey="count" radius={[4, 4, 0, 0]}>
+									{data.statusCounts.map((_, index) => (
+										<Cell
+											key={`cell-${index}`}
+											fill={STATUS_COLORS[index % STATUS_COLORS.length]}
+										/>
+									))}
+								</Bar>
+							</BarChart>
+						</ResponsiveContainer>
+					</ChartContainer>
+				</CardContent>
+			</Card>
+
+			<Card>
+				<CardHeader>
+					<CardTitle>Completion</CardTitle>
+				</CardHeader>
+				<CardContent className="flex justify-center">
+					<ChartContainer config={pieConfig} className="h-52 w-52">
+						<ResponsiveContainer>
+							<PieChart>
+								<Pie
+									data={progressData}
+									dataKey="value"
+									innerRadius={60}
+									outerRadius={80}
+									startAngle={90}
+									endAngle={-270}
+								>
+									<Cell fill="hsl(142, 70.8%, 45.3%)" />
+									<Cell fill="hsl(350, 77.5%, 35.5%)" />
+								</Pie>
+								<ChartTooltip content={<ChartTooltipContent />} />
+							</PieChart>
+						</ResponsiveContainer>
+					</ChartContainer>
+				</CardContent>
+			</Card>
+		</div>
+	);
 }
