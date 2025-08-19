@@ -6,6 +6,7 @@ import {
 	BarChart,
 	CartesianGrid,
 	Cell,
+	Legend,
 	Pie,
 	PieChart,
 	ResponsiveContainer,
@@ -109,6 +110,7 @@ export default function ProjectCharts({ projectId }: ProjectChartsProps) {
 								<Pie
 									data={progressData}
 									dataKey="value"
+									nameKey="label"
 									innerRadius={60}
 									outerRadius={80}
 									startAngle={90}
@@ -117,6 +119,7 @@ export default function ProjectCharts({ projectId }: ProjectChartsProps) {
 									<Cell fill="hsl(142, 70.8%, 45.3%)" />
 									<Cell fill="hsl(350, 77.5%, 35.5%)" />
 								</Pie>
+								<Legend />
 								<ChartTooltip content={<ChartTooltipContent />} />
 							</PieChart>
 						</ResponsiveContainer>
