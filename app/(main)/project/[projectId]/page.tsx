@@ -2,6 +2,7 @@ import { getProject } from "@/actions/projects";
 import { notFound } from "next/navigation";
 import SprintCreationForm from "../_components/create-sprint";
 import SprintBoard from "../_components/sprint-board";
+import ProjectCharts from "./_components/project-charts";
 
 export default async function ProjectPage({
 	params,
@@ -18,6 +19,7 @@ export default async function ProjectPage({
 
 	return (
 		<div className="container mx-auto">
+			<ProjectCharts projectId={projectId} />
 			<SprintCreationForm
 				projectTitle={project.name}
 				projectId={projectId}

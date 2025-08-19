@@ -122,3 +122,37 @@ export async function deleteProject(projectId: any) {
 
 	return { success: true };
 }
+
+export async function getProjectMetrics(projectId: any) {
+        const { userId, orgId } = await auth();
+
+        if (!userId || !orgId) {
+                throw new Error("Unauthorized");
+        }
+
+        const project = await db.project.findUnique({
+                where: { id: projectId },
+                select: { organizationId: true },
+        });
+
+        if (!project || project.organizationId !== orgId) {
+                throw new Error("Project not found");
+        }
+
+        const groups = await db.issue.groupBy({
+                by: ["status"],
+                where: { projectId },
+                _count: { _all: true },
+        });
+
+        const statusCounts = groups.map((g) => ({
+                status: g.status,
+                count: g._count._all,
+        }));
+
+        const total = statusCounts.reduce((sum, cur) => sum + cur.count, 0);
+        const done = statusCounts.find((s) => s.status === "DONE")?.count ?? 0;
+        const percentageCompleted = total > 0 ? Math.round((done / total) * 100) : 0;
+
+        return { statusCounts, percentageCompleted };
+}
