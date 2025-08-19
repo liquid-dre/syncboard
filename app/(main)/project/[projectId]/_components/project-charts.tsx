@@ -20,12 +20,13 @@ import {
 } from "@/components/ui/chart";
 import { getProjectMetrics } from "@/actions/projects";
 
-const STATUS_COLORS = [
-	"hsl(300, 1%, 96%)",
-	"hsl(202, 79%, 56%)",
-	"hsl(45, 93.6%, 46.5%)",
-	"hsl(116, 62%, 41%)",
-];
+const STATUS_ORDER = ["TODO", "IN_PROGRESS", "IN_REVIEW", "DONE"];
+const STATUS_COLOR_MAP: Record<string, string> = {
+	TODO: "hsl(300, 1%, 96%)",
+	IN_PROGRESS: "hsl(202, 79%, 56%)",
+	IN_REVIEW: "hsl(45, 93.6%, 46.5%)",
+	DONE: "hsl(116, 62%, 41%)",
+};
 
 interface ProjectChartsProps {
 	projectId: string;
@@ -53,16 +54,21 @@ export default function ProjectCharts({ projectId }: ProjectChartsProps) {
 	const barConfig = {
 		count: {
 			label: "Issues",
-			color: "hsl(var(--chart-1))",
+			color: "hsl(450, 71%, 65%)",
 		},
 	} as const;
 
 	const pieConfig = {
 		value: {
 			label: "Progress",
-			color: "hsl(var(--chart-1))",
+			color: "hsl(300, 1%, 96%)",
 		},
 	} as const;
+
+	const orderedCounts = STATUS_ORDER.map((status) => ({
+		status,
+		count: data.statusCounts.find((s) => s.status === status)?.count ?? 0,
+	}));
 
 	return (
 		<div className="grid gap-4 md:grid-cols-2">
@@ -73,16 +79,16 @@ export default function ProjectCharts({ projectId }: ProjectChartsProps) {
 				<CardContent>
 					<ChartContainer config={barConfig} className="h-72">
 						<ResponsiveContainer width="100%" height="100%">
-							<BarChart data={data.statusCounts}>
+							<BarChart data={orderedCounts}>
 								<CartesianGrid vertical={false} />
 								<XAxis dataKey="status" tickLine={false} axisLine={false} />
 								<YAxis allowDecimals={false} />
 								<ChartTooltip content={<ChartTooltipContent />} />
 								<Bar dataKey="count" radius={[4, 4, 0, 0]}>
-									{data.statusCounts.map((_, index) => (
+									{orderedCounts.map((item) => (
 										<Cell
-											key={`cell-${index}`}
-											fill={STATUS_COLORS[index % STATUS_COLORS.length]}
+											key={item.status}
+											fill={STATUS_COLOR_MAP[item.status]}
 										/>
 									))}
 								</Bar>
